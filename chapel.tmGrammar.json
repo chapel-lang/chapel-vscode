@@ -1,0 +1,89 @@
+{
+  "scopeName": "source.chpl",
+  "patterns": [
+    { "include": "#line-comment" },
+    { "include": "#block-comment" },
+    { "include": "#control-keyword" },
+    { "include": "#operator-keyword" },
+    { "include": "#other-keyword" },
+    { "include": "#string-quoted-double" },
+    { "include": "#string-quoted-single" },
+    { "include": "#integer" },
+    { "include": "#boolean" },
+    { "include": "#nil" },
+    { "include": "#attribute" },
+    { "include": "#primitive-type" },
+    { "include": "#constructed-type" },
+    { "include": "#builtin-type" },
+    { "include": "#augment-type" },
+    { "include": "#storage-specifier" }
+  ],
+  "repository": {
+    "line-comment": {
+      "name": "comment.line.double-slash.chapel",
+      "begin": "(\\/\\/)",
+      "end": "(?=\\n)"
+    },
+    "block-comment": {
+      "name": "comment.block.chapel",
+      "begin": "(\\/\\*)",
+      "end": "(\\*\\/)"
+    },
+    "control-keyword": {
+      "name": "keyword.control.chapel",
+      "match": "\\b(as|do|manage|return|if|then|else|while|for|forall|foreach|on|in|break|continue|match)\\b"
+    },
+    "operator-keyword": {
+      "name": "keyword.operator.chapel",
+      "match": "\\b(by|new)\\b"
+    },
+    "other-keyword": {
+      "name": "keyword.other.chapel",
+      "match": "\\b(import|export|use|extern|label)\\b"
+    },
+    "string-quoted-double": {
+      "name": "string.quoted.double.chapel",
+      "match": "\"([^\"\\\\\\n]|\\\\[^\\n]?)*?[\"\\n]"
+    },
+    "string-quoted-single": {
+      "name": "constant.character.chapel",
+      "match": "'([^'\\\\\\n]|\\\\[^\\n]?)*?['\\n]"
+    },
+    "integer": {
+      "name": "constant.numeric.chapel",
+      "match": "\\b(0x[0-9A-Fa-f]+|[0-9]+)(_[a-zA-Z]+)?\\b"
+    },
+    "boolean": {
+      "name": "constant.language.chapel",
+      "match": "\\b(false|true)\\b"
+    },
+    "nil": {
+      "name": "constant.language.chapel",
+      "match": "\\bnil\\b"
+    },
+    "attribute": {
+      "name": "storage.modifier.chapel",
+      "match": "@([A-Za-z_][A-Za-z0-9_]*)\\b"
+    },
+    "primitive-type": {
+      "name": "storage.type.chapel",
+      "match": "\\b(int|real|uint|complex)\\b"
+    },
+    "constructed-type": {
+      "name": "storage.type.chapel",
+      "match": "\\b(class|record|union|interface)\\b"
+    },
+    "builtin-type": {
+      "name": "storage.type.chapel",
+      "match": "\\b(string|domain|range)\\b"
+    },
+    "augment-type": {
+      "name": "storage.modifier.chapel",
+      "match": "\\b(atomic|sync|single|owned|shared|unmanaged|borrowed)\\b"
+    },
+    "storage-specifier": {
+      "name": "storage.modifier.chapel",
+      "match": "\\b(var|const|ref|param|type)\\b"
+    }
+  }
+}

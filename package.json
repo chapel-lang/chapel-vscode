@@ -1,0 +1,70 @@
+{
+  "name": "chapel-vscode",
+  "description": "A Visual Studio Code extension for the Chapel language",
+  "author": "David Longnecker",
+  "license": "Apache-2.0",
+  "version": "0.0.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dlongnecke-cray/chapel-vscode"
+  },
+  "publisher": "dlongnecke-cray",
+  "categories": [],
+  "activationEvents": [ "onLanguage:Chapel" ],
+  "main": "./extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "Chapel",
+        "extensions": [ ".chpl" ]
+      }
+    ],
+    "grammars": [
+      {
+        "language" : "Chapel",
+        "scopeName": "source.chpl",
+        "path": "./chapel.tmGrammar.json"
+      }
+    ],
+    "configuration": {
+    "type": "object",
+      "title": "Chapel",
+      "properties": {
+        "chapel.languageServerPath": {
+          "type": "string",
+          "default": "",
+          "description": "Path to the Chapel language server (e.g., chpldef)"
+        },
+        "chapel.languageServerArguments": {
+          "type": "string",
+          "default": "",
+          "description": "Command line arguments for the language server"
+        },
+        "chapel.writeToLocalLog": {
+          "type": "boolean",
+          "default": "false",
+          "description": "Write to a log file in the extension directory"
+        },
+        "chapel.trace.server": {
+          "scope": "window",
+          "type": "string",
+          "enum": [
+            "off",
+            "messages",
+            "verbose",
+            "trace"
+          ],
+          "default": "off",
+          "description": "Turn on to trace client/server communcation"
+        }
+      }
+    },
+    "commands": []
+  },
+  "engines": {
+    "vscode": "^1.65.0"
+  },
+  "dependencies": {
+    "vscode-languageclient": "8.0.2"
+  }
+}
