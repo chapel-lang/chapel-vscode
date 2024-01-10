@@ -1,0 +1,167 @@
+{
+  "name": "chapel-vscode",
+  "displayName": "Chapel",
+  "description": "A collection of development tools for programming in Chapel",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.84.0"
+  },
+  "publisher": "chapel",
+  "author": {
+    "name": "chapel"
+  },
+  "categories": [
+    "Programming Languages", "Linters", "Snippets", "Other"
+  ],
+  "keywords": ["chapel"],
+  "activationEvents": [],
+  "main": "./out/extension.js",
+  "icon": "./icons/chapel.png",
+  "license": "SEE LICENSE IN LICENSE",
+  "bugs": {
+    "url": "https://github.hpe.com/jade-abraham/chplcheck-vscode/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.hpe.com/jade-abraham/chplcheck-vscode.git"
+  },
+  "contributes": {
+    "languages": [
+      {
+        "id": "chapel",
+        "aliases": [
+          "chapel"
+        ],
+        "extensions": [
+          ".chpl"
+        ],
+        "configuration": "./chapel-language-configuration.json",
+        "icon": {
+          "light": "./icons/chapel.png",
+          "dark": "./icons/chapel.png"
+        }
+      },
+      {
+        "id": "chapel-ast",
+        "aliases": [
+          "chapel-ast"
+        ],
+        "extensions": [
+          ".ast"
+        ],
+        "configuration": "./chapel-ast-language-configuration.json"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "chapel",
+        "path": "./snippets/chapel.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "chapel",
+        "scopeName": "source.chapel",
+        "path": "./syntaxes/chapel.tmLanguage.json"
+      },
+      {
+        "language": "chapel-ast",
+        "scopeName": "source.ast",
+        "path": "./syntaxes/chapel-ast.tmLanguage.json"
+      }
+    ],
+    "commands": [
+      {
+        "command": "chplcheck.restart",
+        "title": "Restart chplcheck",
+        "category": "chapel"
+      },
+      {
+        "command": "chpldef.restart",
+        "title": "Restart chpldef",
+        "category": "chapel"
+      }
+    ],
+    "configuration": [
+      {
+        "type": "object",
+        "title": "chapel configuration",
+        "properties": {
+          "chapel.CHPL_HOME": {
+            "scope": "window",
+            "type": "string",
+            "description": "CHPL_HOME"
+          },
+          "chapel.CHPL_DEVELOPER": {
+            "scope": "window",
+            "type": "boolean",
+            "default": false,
+            "description": "CHPL_DEVELOPER"
+          },
+          "chapel.chplcheck.path": {
+            "scope": "window",
+            "type": "string",
+            "description": "path for chplcheck"
+          },
+          "chapel.chplcheck.enable": {
+            "scope": "window",
+            "type": "boolean",
+            "default": false,
+            "description": "Enable chplcheck"
+          },
+          "chapel.chplcheck.args": {
+            "scope": "window",
+            "type": "array",
+            "items": {
+              "type":"string"
+            },
+            "default": [],
+            "description": "Extra arguments to pass to chplcheck"
+          },
+          "chapel.chpldef.path": {
+            "scope": "window",
+            "type": "string",
+            "description": "path for chpldef"
+          },
+          "chapel.chpldef.enable": {
+            "scope": "window",
+            "type": "boolean",
+            "default": false,
+            "description": "Enable chpldef"
+          },
+          "chapel.chpldef.args": {
+            "scope": "window",
+            "type": "array",
+            "items": {
+              "type":"string"
+            },
+            "description": "Extra arguments to pass to chpldef"
+          }
+        }
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.3",
+    "@types/node": "18.x",
+    "@types/vscode": "^1.84.0",
+    "@typescript-eslint/eslint-plugin": "^6.9.0",
+    "@typescript-eslint/parser": "^6.9.0",
+    "@vscode/test-electron": "^2.3.6",
+    "eslint": "^8.52.0",
+    "glob": "^10.3.10",
+    "mocha": "^10.2.0",
+    "typescript": "^5.2.2"
+  },
+  "dependencies": {
+    "vscode-languageclient": "^9.0.1"
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "forall": {
+    "prefix": "forall",
+    "body": [
+      "forall $1 in $2 {",
+      "  $3",
+      "}"
+    ],
+    "description": "a simple parallel loop"
+  },
+  "writeln": {
+    "prefix": "writeln",
+    "body": ["writeln($1);"],
+    "description": "simple print statement"
+  },
+  "on": {
+    "prefix": "on",
+    "body": [
+      "on $1 {",
+      "  $2",
+      "}"
+    ],
+    "description": "migrate execute to another locale"
+  },
+  "Locales": {
+    "prefix": "Locales",
+    "body": ["Locales"],
+    "description": "Locales array"
+  },
+  "all-tasks": {
+    "prefix": "coforall",
+    "body": [
+      "coforall tid in 0..#here.maxTaskPar {",
+      "  $1",
+      "}"
+    ],
+    "description": "create a task for each local core"
+  },
+  "all-locales": {
+    "prefix": "coforall",
+    "body": [
+      "coforall loc in Locales do on loc {",
+      "  $1",
+      "}"
+    ],
+    "description": "create a task for each locale"
+  },
+  "all-locales-all-tasks": {
+    "prefix": "coforall",
+    "body": [
+      "coforall loc in Locales do on loc {",
+      "  coforall tid in 0..#loc.maxTaskPar {",
+      "    $1",
+      "  }",
+      "}"
+    ],
+    "description": "create a task each core on each locale"
+  }
+}
