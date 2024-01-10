@@ -11,9 +11,14 @@
     "name": "chapel"
   },
   "categories": [
-    "Programming Languages", "Linters", "Snippets", "Other"
+    "Programming Languages",
+    "Linters",
+    "Snippets",
+    "Other"
   ],
-  "keywords": ["chapel"],
+  "keywords": [
+    "chapel"
+  ],
   "activationEvents": [],
   "main": "./out/extension.js",
   "icon": "./icons/chapel.png",
@@ -113,7 +118,7 @@
             "scope": "window",
             "type": "array",
             "items": {
-              "type":"string"
+              "type": "string"
             },
             "default": [],
             "description": "Extra arguments to pass to chplcheck"
@@ -133,7 +138,7 @@
             "scope": "window",
             "type": "array",
             "items": {
-              "type":"string"
+              "type": "string"
             },
             "description": "Extra arguments to pass to chpldef"
           }
@@ -146,19 +151,15 @@
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile && npm run lint",
-    "lint": "eslint src --ext ts",
-    "test": "node ./out/test/runTest.js"
+    "lint": "eslint src --ext ts"
   },
   "devDependencies": {
-    "@types/mocha": "^10.0.3",
     "@types/node": "18.x",
     "@types/vscode": "^1.84.0",
     "@typescript-eslint/eslint-plugin": "^6.9.0",
     "@typescript-eslint/parser": "^6.9.0",
     "@vscode/test-electron": "^2.3.6",
     "eslint": "^8.52.0",
-    "glob": "^10.3.10",
-    "mocha": "^10.2.0",
     "typescript": "^5.2.2"
   },
   "dependencies": {

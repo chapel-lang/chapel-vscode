@@ -103,7 +103,9 @@ function getChplCheck(chplhome: string): string {
   const config = vscode.workspace.getConfiguration("chapel");
   const chplcheck = config.get<ToolConfig>("chplcheck") ?? {};
   let p = chplcheck.path;
-  if (p) return p;
+  if (p) {
+    return p;
+  }
   p = path.resolve(path.join(chplhome, "tools", "chplcheck", "chplcheck"));
   return p;
 }
@@ -111,13 +113,17 @@ function getChplDef(chplhome: string): string {
   const config = vscode.workspace.getConfiguration("chapel");
   const chpldef = config.get<ToolConfig>("chpldef") ?? {};
   let p = chpldef.path;
-  if (p) return p;
+  if (p) {
+    return p;
+  }
   p = path.resolve(path.join(chplhome, "bin", "darwin-arm64", "chpldef"));
   return p;
 }
 
 async function startChplCheck() {
-  if (!getChplCheckEnabled()) return;
+  if (!getChplCheckEnabled()) {
+    return;
+  }
   // Don't interfere if we are already in the process of launching the server.
   if (chplcheckClientStarting) {
     return;
@@ -175,7 +181,9 @@ async function startChplCheck() {
 }
 
 async function startChplDef() {
-  if (!getChplDefEnabled()) return;
+  if (!getChplDefEnabled()) {
+    return;
+  }
   // Don't interfere if we are already in the process of launching the server.
   if (chpldefClientStarting) {
     return;
