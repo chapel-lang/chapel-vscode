@@ -3,8 +3,8 @@ import * as vscode from "vscode";
 
 let chplcheckClient: LanguageClient | undefined;
 let chplcheckClientStarting = false;
-let chpldefClient: LanguageClient | undefined;
-let chpldefClientStarting = false;
+let clsClient: LanguageClient | undefined;
+let clsClientStarting = false;
 let logger: vscode.LogOutputChannel;
 
 import {
@@ -28,9 +28,9 @@ export function activate(context: vscode.ExtensionContext) {
     })
   );
   context.subscriptions.push(
-    vscode.commands.registerCommand("chpldef.restart", async () => {
-      logger.info("restarting chpldef server");
-      await startChplDef();
+    vscode.commands.registerCommand("chpl-language-server.restart", async () => {
+      logger.info("restarting chpl-language-server server");
+      await startCLS();
     })
   );
 
@@ -40,8 +40,8 @@ export function activate(context: vscode.ExtensionContext) {
       if (!chplcheckClient) {
         await startChplCheck();
       }
-      if (!chpldefClient) {
-        await startChplDef();
+      if (!clsClient) {
+        await startCLS();
       }
     })
   );
@@ -53,7 +53,7 @@ export function activate(context: vscode.ExtensionContext) {
 export function deactivate() {
   return Promise.all([
     stopLangServer(chplcheckClient),
-    stopLangServer(chpldefClient),
+    stopLangServer(clsClient),
   ]);
 }
 
@@ -83,20 +83,20 @@ function getChplCheckArgs(): Array<string> {
   return chplcheck.args ?? [];
 }
 
-function getChplDefArgs(): Array<string> {
+function getCLSArgs(): Array<string> {
   const config = vscode.workspace.getConfiguration("chapel");
-  const chpldef = config.get<ToolConfig>("chpldef") ?? {};
-  return chpldef.args ?? [];
+  const cls = config.get<ToolConfig>("chpl-language-server") ?? {};
+  return cls.args ?? [];
 }
 function getChplCheckEnabled(): boolean {
   const config = vscode.workspace.getConfiguration("chapel");
   const chplcheck = config.get<ToolConfig>("chplcheck") ?? {};
-  return chplcheck.enable ?? false;
+  return chplcheck.enable ?? true;
 }
-function getChplDefEnabled(): boolean {
+function getCLSEnabled(): boolean {
   const config = vscode.workspace.getConfiguration("chapel");
-  const chpldef = config.get<ToolConfig>("chpldef") ?? {};
-  return chpldef.enable ?? false;
+  const cls = config.get<ToolConfig>("chpl-language-server") ?? {};
+  return cls.enable ?? true;
 }
 
 function getChplCheck(chplhome: string): string {
@@ -109,14 +109,14 @@ function getChplCheck(chplhome: string): string {
   p = path.resolve(path.join(chplhome, "tools", "chplcheck", "chplcheck"));
   return p;
 }
-function getChplDef(chplhome: string): string {
+function getCLS(chplhome: string): string {
   const config = vscode.workspace.getConfiguration("chapel");
-  const chpldef = config.get<ToolConfig>("chpldef") ?? {};
-  let p = chpldef.path;
+  const cls = config.get<ToolConfig>("chpl-language-server") ?? {};
+  let p = cls.path;
   if (p) {
     return p;
   }
-  p = path.resolve(path.join(chplhome, "bin", "darwin-arm64", "chpldef"));
+  p = path.resolve(path.join(chplhome, "tools", "chpl-language-server", "chpl-language-server"));
   return p;
 }
 
@@ -180,44 +180,44 @@ async function startChplCheck() {
   }
 }
 
-async function startChplDef() {
-  if (!getChplDefEnabled()) {
+async function startCLS() {
+  if (!getCLSEnabled()) {
     return;
   }
   // Don't interfere if we are already in the process of launching the server.
-  if (chpldefClientStarting) {
+  if (clsClientStarting) {
     return;
   }
 
-  chpldefClientStarting = true;
-  if (chpldefClient) {
-    await stopLangServer(chpldefClient);
-    chpldefClientStarting = false;
+  clsClientStarting = true;
+  if (clsClient) {
+    await stopLangServer(clsClient);
+    clsClientStarting = false;
   }
 
   const chplhome = getChplHome();
 
   if (!chplhome) {
     logger.error(`Unable to start server, missing CHPL_HOME`);
-    await stopLangServer(chpldefClient);
-    chpldefClientStarting = false;
+    await stopLangServer(clsClient);
+    clsClientStarting = false;
   }
 
-  const chpldef = getChplDef(chplhome!);
+  const cls = getCLS(chplhome!);
 
   var args = [];
-  var userArgs = getChplDefArgs();
+  var userArgs = getCLSArgs();
   args.push(...userArgs);
 
-  logger.info(`chpldef path: '${chpldef}'`);
-  logger.info(`chpldef args: '${userArgs}'`);
+  logger.info(`chpl-language-server path: '${cls}'`);
+  logger.info(`chpl-language-server args: '${userArgs}'`);
 
   let env = process.env;
   env.CHPL_HOME = chplhome!;
   env.CHPL_DEVELOPER = getChplDeveloper() ? "1" : "0";
 
   const serverOptions: ServerOptions = {
-    command: chpldef!,
+    command: cls!,
     args: args,
     options: {
       cwd: chplhome!,
@@ -227,15 +227,15 @@ async function startChplDef() {
   logger.debug("server options", serverOptions);
 
   try {
-    chpldefClient = new LanguageClient(
-      "chpldef",
+    clsClient = new LanguageClient(
+      "chpl-language-server",
       serverOptions,
       getClientOptions()
     );
-    await chpldefClient.start();
-    chpldefClientStarting = false;
+    await clsClient.start();
+    clsClientStarting = false;
   } catch (err) {
-    chpldefClientStarting = false;
+    clsClientStarting = false;
     logger.error(`Unable to start server: ${err}`);
   }
 }

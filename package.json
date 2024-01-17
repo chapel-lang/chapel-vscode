@@ -82,8 +82,8 @@
         "category": "chapel"
       },
       {
-        "command": "chpldef.restart",
-        "title": "Restart chpldef",
+        "command": "chpl-language-server.restart",
+        "title": "Restart chpl-language-server",
         "category": "chapel"
       }
     ],
@@ -111,7 +111,7 @@
           "chapel.chplcheck.enable": {
             "scope": "window",
             "type": "boolean",
-            "default": false,
+            "default": true,
             "description": "Enable chplcheck"
           },
           "chapel.chplcheck.args": {
@@ -123,24 +123,24 @@
             "default": [],
             "description": "Extra arguments to pass to chplcheck"
           },
-          "chapel.chpldef.path": {
+          "chapel.chpl-language-server.path": {
             "scope": "window",
             "type": "string",
-            "description": "path for chpldef"
+            "description": "path for chpl-language-server"
           },
-          "chapel.chpldef.enable": {
+          "chapel.chpl-language-server.enable": {
             "scope": "window",
             "type": "boolean",
-            "default": false,
-            "description": "Enable chpldef"
+            "default": true,
+            "description": "Enable chpl-language-server"
           },
-          "chapel.chpldef.args": {
+          "chapel.chpl-language-server.args": {
             "scope": "window",
             "type": "array",
             "items": {
               "type": "string"
             },
-            "description": "Extra arguments to pass to chpldef"
+            "description": "Extra arguments to pass to chpl-language-server"
           }
         }
       }
