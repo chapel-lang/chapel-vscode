@@ -24,11 +24,11 @@
   "icon": "./icons/chapel.png",
   "license": "SEE LICENSE IN LICENSE",
   "bugs": {
-    "url": "https://github.hpe.com/jade-abraham/chplcheck-vscode/issues"
+    "url": "https://github.com/chapel-lang/chapel-vscode/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.hpe.com/jade-abraham/chplcheck-vscode.git"
+    "url": "https://github.com/chapel-lang/chapel-vscode.git"
   },
   "contributes": {
     "languages": [
