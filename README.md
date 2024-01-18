@@ -36,9 +36,7 @@ These directions assume you already have Chapel built from source and know what 
 Individual linter rules in the Chapel linter, `chplcheck`, can be turned on or off. This is done by adding arguments to your VSCode settings. For example, the following turns on the NestedCoforalls and UnusedFormal rules.
 
 ```json
-{
-  "chapel.chplcheck.args": [
-    "--enable-rule", "NestedCoforalls", "--enable-rule", "UnusedFormal"
-  ],
-}
+"chapel.chplcheck.args": [
+  "--enable-rule", "NestedCoforalls", "--enable-rule", "UnusedFormal"
+],
 ```
