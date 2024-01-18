@@ -1,70 +1,168 @@
 {
   "name": "chapel-vscode",
-  "description": "A Visual Studio Code extension for the Chapel language",
-  "author": "David Longnecker",
-  "license": "Apache-2.0",
-  "version": "0.0.0",
+  "displayName": "Chapel",
+  "description": "A collection of development tools for programming in Chapel",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.70.0"
+  },
+  "publisher": "chapel",
+  "author": {
+    "name": "chapel"
+  },
+  "categories": [
+    "Programming Languages",
+    "Linters",
+    "Snippets",
+    "Other"
+  ],
+  "keywords": [
+    "chapel"
+  ],
+  "activationEvents": [],
+  "main": "./out/extension.js",
+  "icon": "./icons/chapel.png",
+  "license": "SEE LICENSE IN LICENSE",
+  "bugs": {
+    "url": "https://github.com/chapel-lang/chapel-vscode/issues"
+  },
   "repository": {
     "type": "git",
-    "url": "https://github.com/dlongnecke-cray/chapel-vscode"
+    "url": "https://github.com/chapel-lang/chapel-vscode.git"
   },
-  "publisher": "dlongnecke-cray",
-  "categories": [],
-  "activationEvents": [ "onLanguage:Chapel" ],
-  "main": "./extension.js",
   "contributes": {
     "languages": [
       {
-        "id": "Chapel",
-        "extensions": [ ".chpl" ]
+        "id": "chapel",
+        "aliases": [
+          "chapel"
+        ],
+        "extensions": [
+          ".chpl"
+        ],
+        "configuration": "./chapel-language-configuration.json",
+        "icon": {
+          "light": "./icons/chapel.png",
+          "dark": "./icons/chapel.png"
+        }
+      },
+      {
+        "id": "chapel-ast",
+        "aliases": [
+          "chapel-ast"
+        ],
+        "extensions": [
+          ".ast"
+        ],
+        "configuration": "./chapel-ast-language-configuration.json"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "chapel",
+        "path": "./snippets/chapel.json"
       }
     ],
     "grammars": [
       {
-        "language" : "Chapel",
-        "scopeName": "source.chpl",
-        "path": "./chapel.tmGrammar.json"
+        "language": "chapel",
+        "scopeName": "source.chapel",
+        "path": "./syntaxes/chapel.tmLanguage.json"
+      },
+      {
+        "language": "chapel-ast",
+        "scopeName": "source.ast",
+        "path": "./syntaxes/chapel-ast.tmLanguage.json"
       }
     ],
-    "configuration": {
-    "type": "object",
-      "title": "Chapel",
-      "properties": {
-        "chapel.languageServerPath": {
-          "type": "string",
-          "default": "",
-          "description": "Path to the Chapel language server (e.g., chpldef)"
-        },
-        "chapel.languageServerArguments": {
-          "type": "string",
-          "default": "",
-          "description": "Command line arguments for the language server"
-        },
-        "chapel.writeToLocalLog": {
-          "type": "boolean",
-          "default": "false",
-          "description": "Write to a log file in the extension directory"
-        },
-        "chapel.trace.server": {
-          "scope": "window",
-          "type": "string",
-          "enum": [
-            "off",
-            "messages",
-            "verbose",
-            "trace"
-          ],
-          "default": "off",
-          "description": "Turn on to trace client/server communcation"
+    "commands": [
+      {
+        "command": "chplcheck.restart",
+        "title": "Restart chplcheck",
+        "category": "chapel"
+      },
+      {
+        "command": "chpl-language-server.restart",
+        "title": "Restart chpl-language-server",
+        "category": "chapel"
+      }
+    ],
+    "configuration": [
+      {
+        "type": "object",
+        "title": "chapel configuration",
+        "properties": {
+          "chapel.CHPL_HOME": {
+            "scope": "window",
+            "type": "string",
+            "description": "CHPL_HOME"
+          },
+          "chapel.CHPL_DEVELOPER": {
+            "scope": "window",
+            "type": "boolean",
+            "default": false,
+            "description": "CHPL_DEVELOPER"
+          },
+          "chapel.chplcheck.path": {
+            "scope": "window",
+            "type": "string",
+            "description": "path for chplcheck"
+          },
+          "chapel.chplcheck.enable": {
+            "scope": "window",
+            "type": "boolean",
+            "default": true,
+            "description": "Enable chplcheck"
+          },
+          "chapel.chplcheck.args": {
+            "scope": "window",
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "default": [],
+            "description": "Extra arguments to pass to chplcheck"
+          },
+          "chapel.chpl-language-server.path": {
+            "scope": "window",
+            "type": "string",
+            "description": "path for chpl-language-server"
+          },
+          "chapel.chpl-language-server.enable": {
+            "scope": "window",
+            "type": "boolean",
+            "default": true,
+            "description": "Enable chpl-language-server"
+          },
+          "chapel.chpl-language-server.args": {
+            "scope": "window",
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Extra arguments to pass to chpl-language-server"
+          }
         }
       }
-    },
-    "commands": []
+    ]
   },
-  "engines": {
-    "vscode": "^1.65.0"
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts"
+  },
+  "devDependencies": {
+    "@types/node": "18.x",
+    "@types/vscode": "^1.70.0",
+    "@typescript-eslint/eslint-plugin": "^6.9.0",
+    "@typescript-eslint/parser": "^6.9.0",
+    "@vscode/test-electron": "^2.3.6",
+    "eslint": "^8.52.0",
+    "typescript": "^5.2.2"
   },
   "dependencies": {
-    "vscode-languageclient": "8.0.2"
+    "vscode-languageclient": "^8.0.2"
   }
 }
