@@ -34,6 +34,21 @@ export function activate(context: vscode.ExtensionContext) {
     })
   );
 
+  let env = process.env;
+  const chplhome = getChplHome();
+  env.CHPL_HOME = chplhome!;
+  env.CHPL_DEVELOPER = getChplDeveloper() ? "1" : "0";
+
+	context.subscriptions.push(
+    vscode.commands.registerCommand('chapel.runFile', (filepath: string) => {
+		  const terminal = vscode.window.createTerminal({env: env});
+      terminal.sendText("cd $CHPL_HOME && source util/setchplenv.bash && cd -")
+		  terminal.sendText("chpl " + filepath + " -o a.out && ./a.out");
+      terminal.show();
+	  })
+  );
+
+
   // Start the language server once the user opens the first text document
   context.subscriptions.push(
     vscode.workspace.onDidOpenTextDocument(async () => {
