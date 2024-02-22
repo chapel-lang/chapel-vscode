@@ -87,6 +87,10 @@
         "category": "chapel"
       }
     ],
+    "activationEvents": [
+      "onLanguage:chapel",
+      "onLanguage:chapel-ast"
+    ],
     "configuration": [
       {
         "type": "object",
