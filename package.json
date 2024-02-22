@@ -148,7 +148,12 @@
           }
         }
       }
-    ]
+    ],
+    "configurationDefaults": {
+      "[chapel]": {
+        "editor.semanticHighlighting.enabled": true
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
