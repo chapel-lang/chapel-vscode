@@ -71,7 +71,7 @@
       },
       {
         "language": "chapel-ast",
-        "scopeName": "source.ast",
+        "scopeName": "source.chapelAst",
         "path": "./syntaxes/chapel-ast.tmLanguage.json"
       }
     ],
