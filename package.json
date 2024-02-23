@@ -77,6 +77,16 @@
     ],
     "commands": [
       {
+        "command": "chapel.findChpl",
+        "title": "Find Chapel",
+        "category": "chapel"
+      },
+      {
+        "command": "chapel.buildTools",
+        "title": "Build chpl-language-server and chplcheck",
+        "category": "chapel"
+      },
+      {
         "command": "chplcheck.restart",
         "title": "Restart chplcheck",
         "category": "chapel"
@@ -107,11 +117,6 @@
             "default": false,
             "description": "CHPL_DEVELOPER"
           },
-          "chapel.chplcheck.path": {
-            "scope": "window",
-            "type": "string",
-            "description": "path for chplcheck"
-          },
           "chapel.chplcheck.enable": {
             "scope": "window",
             "type": "boolean",
@@ -127,16 +132,17 @@
             "default": [],
             "description": "Extra arguments to pass to chplcheck"
           },
-          "chapel.chpl-language-server.path": {
-            "scope": "window",
-            "type": "string",
-            "description": "path for chpl-language-server"
-          },
           "chapel.chpl-language-server.enable": {
             "scope": "window",
             "type": "boolean",
             "default": true,
             "description": "Enable chpl-language-server"
+          },
+          "chapel.chpl-language-server.resolver": {
+            "scope": "window",
+            "type": "boolean",
+            "default": false,
+            "description": "Enable the dyno resover"
           },
           "chapel.chpl-language-server.args": {
             "scope": "window",
