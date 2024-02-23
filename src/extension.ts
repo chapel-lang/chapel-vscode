@@ -35,7 +35,7 @@ function showChplHomeMissingError(errorString?: string) {
 function pickMyOwnChplHome() {
   vscode.window
     .showInputBox({
-      placeHolder: "Enter the path to CHPL_HOME",
+      placeHolder: "Enter the path to CHPL_HOME (possible run `chpl --print-chpl-home` in the terminal to find it)",
     })
     .then((selection) => {
       if (selection !== undefined) {
