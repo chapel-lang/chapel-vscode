@@ -19,17 +19,15 @@ After installing the extension, follow these steps to make sure VSCode is setup 
 
 ### From an existing Chapel build
 
-These directions assume you already have Chapel built from source and know what your `CHPL_HOME` is:
+The extension can auto-detect your `CHPL_HOME`, just open a Chapel file. The extension will prompt you to select an existing Chapel install to configure your editor. If you don't see your value of `CHPL_HOME` or don't know the right one, run `chpl --print-chpl-home` to get the right value. If the automatic installation fails, you can explicitly set your `CHPL_HOME` in your VSCode settings.json as `"chapel.CHPL_HOME": "/path/to/your/chapel/home"`.
 
-1. Execute the following command to build the python tools `(cd $CHPL_HOME && make chapel-py-venv)`
-2. Set your `CHPL_HOME` in your VSCode settings.json as `"chapel.CHPL_HOME": "/path/to/your/chapel/home"`.
+The extension can also auto-build the Chapel language tools and will prompt you to do so if they are missing. If you prefer to build them manually, run the following: `(export CHPL_HOME=/path/to/your/chapel/home && cd $CHPL_HOME && make chpl-language-server && make chplcheck)`
 
 ### Without an existing Chapel build
 
 1. Obtain a copy of latest Chapel source release from <https://chapel-lang.org/download.html>
 2. After downloading the tar, extract the source tree with `tar xzf chapel-VERSION.tar.gz`
-3. Build the python tools with ``(cd chapel-VERSION && CHPL_HOME=`pwd` make chapel-py-venv && echo "Your CHPL_HOME is '`pwd`'")``
-4. The above command will tell you what your `CHPL_HOME` is, add it to your VSCode settings.json as `"chapel.CHPL_HOME": "/path/to/your/chapel/home"`.
+3. After unpacking the tar, you can treat this as your `CHPL_HOME` (`"/path/to/unpacked/source/chapel-VERSION"`) and follow the steps for an existing Chapel build.
 
 ## Linter options
 
