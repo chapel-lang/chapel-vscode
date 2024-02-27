@@ -104,7 +104,7 @@
     "configuration": [
       {
         "type": "object",
-        "title": "chapel configuration",
+        "title": "Chapel Language Support",
         "properties": {
           "chapel.CHPL_HOME": {
             "scope": "window",
