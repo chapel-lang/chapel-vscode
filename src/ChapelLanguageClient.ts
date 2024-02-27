@@ -14,25 +14,31 @@ export enum LanguageClientState {
 }
 
 class ErrorHandlingClient extends vlc.LanguageClient {
-  errorHandler: (message: string, fatal: boolean, data?: any) => void;
+  infoHandler: (message: string, data?: any) => void;
+  warningHandler: (message: string, data?: any) => void;
+  errorHandler: (message: string, data?: any) => void;
   constructor(
     name: string,
     serverOptions: vlc.ServerOptions,
     clientOptions: vlc.LanguageClientOptions,
-    errorHandler: (message: string, fatal: boolean, data?: any) => void
+    infoHandler: (message: string, data?: any) => void,
+    warningHandler: (message: string, data?: any) => void,
+    errorHandler: (message: string, data?: any) => void
   ) {
     super(name, serverOptions, clientOptions);
+    this.infoHandler = infoHandler;
+    this.warningHandler = warningHandler;
     this.errorHandler = errorHandler;
   }
 
   override info(message: string, data?: any): void {
-    this.errorHandler(message, false, data);
+    this.infoHandler(message, data);
   }
   override warn(message: string, data?: any): void {
-    this.errorHandler(message, false, data);
+    this.warningHandler(message, data);
   }
   override error(message: string, data?: any): void {
-    this.errorHandler(message, true, data);
+    this.errorHandler(message, data);
   }
 }
 
@@ -180,11 +186,25 @@ export abstract class ChapelLanguageClient {
     const errorLogger = (message: string) => {
       this.logger.error(`${this.name}: ${message}`);
     };
-    const errorHandler = (
-      message: string,
-      fatal: boolean = false,
-      data?: any
-    ) => {
+    const infoLogger = (message: string, data?: any) => {
+      if (data) {
+        this.logger.info(
+          `${this.name}: ${message} - ${JSON.stringify(data, undefined, 2)}`
+        );
+      } else {
+        this.logger.info(`${this.name}: ${message}`);
+      }
+    };
+    const warningLogger = (message: string, data?: any) => {
+      if (data) {
+        this.logger.warn(
+          `${this.name}: ${message} - ${JSON.stringify(data, undefined, 2)}`
+        );
+      } else {
+        this.logger.warn(`${this.name}: ${message}`);
+      }
+    };
+    const errorHandler = (message: string, data?: any) => {
       if (data) {
         errorLogger(`${message} - ${JSON.stringify(data, undefined, 2)}`);
       } else {
@@ -198,26 +218,24 @@ export abstract class ChapelLanguageClient {
         }
       }
 
-      if (fatal) {
-        this.stop().finally(() => {
-          this.state = LanguageClientState.ERRORED;
+      this.stop().finally(() => {
+        this.state = LanguageClientState.ERRORED;
 
-          vscode.window
-            .showErrorMessage(
-              `${this.name} encountered an unrecoverable error`,
-              "Restart",
-              "Show Log",
-              "Ok"
-            )
-            .then((value) => {
-              if (value === "Restart") {
-                this.restart();
-              } else if (value === "Show Log") {
-                this.logger.show();
-              }
-            });
-        });
-      }
+        vscode.window
+          .showErrorMessage(
+            `${this.name} encountered an unrecoverable error`,
+            "Restart",
+            "Show Log",
+            "Ok"
+          )
+          .then((value) => {
+            if (value === "Restart") {
+              this.restart();
+            } else if (value === "Show Log") {
+              this.logger.show();
+            }
+          });
+      });
     };
 
     const clientOptions: vlc.LanguageClientOptions = {
@@ -258,6 +276,8 @@ export abstract class ChapelLanguageClient {
       this.name,
       serverOptions,
       clientOptions,
+      infoLogger,
+      warningLogger,
       errorHandler
     );
 
@@ -305,7 +325,12 @@ export class ChplCheckClient extends ChapelLanguageClient {
 }
 export class CLSClient extends ChapelLanguageClient {
   getToolPath(): string {
-    return path.join(this.chplhome, "tools", "chpl-language-server", "chpl-language-server");
+    return path.join(
+      this.chplhome,
+      "tools",
+      "chpl-language-server",
+      "chpl-language-server"
+    );
   }
   alwaysArguments(): Array<string> {
     let args = [];
