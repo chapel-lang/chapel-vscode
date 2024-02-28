@@ -57,6 +57,11 @@
         "configuration": "./chapel-ast-language-configuration.json"
       }
     ],
+    "breakpoints": [
+      {
+        "language": "chapel"
+      }
+    ],
     "snippets": [
       {
         "language": "chapel",
