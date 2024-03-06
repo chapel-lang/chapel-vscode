@@ -6,9 +6,9 @@
   "engines": {
     "vscode": "^1.70.0"
   },
-  "publisher": "chapel",
+  "publisher": "chpl-hpe",
   "author": {
-    "name": "chapel"
+    "name": "Chapel"
   },
   "categories": [
     "Programming Languages",
