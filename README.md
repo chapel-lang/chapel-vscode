@@ -1,9 +1,9 @@
 # chapel-vscode extension
 
-## Features
+## Core Features
 
 - Intellisense
-  - GotoDefinition: jump to a symbols definition
+  - GotoDefinition: jump to a symbol's definition
   - Hover: hover over a symbol to view its signature and documentation
   - Code Completion: suggest completion for symbols in the current file
   - Symbol List: see all symbols for a file
@@ -13,9 +13,16 @@
 - Snippets
 - Syntax Highlighting
 
+### Experimental Features
+
+- Intellisense
+  - Inlays: view values, types, and named call arguments inline with code
+  - Generic Instantiations: inspect generic code with helpful annotations
+  - Dead Code: highlight dead code that will never execute
+
 ## Setup
 
-After installing the extension, follow these steps to make sure VSCode is setup to use the extension.
+After installing the extension, follow these steps to make sure VSCode is set up to use the extension.
 
 ### From an existing Chapel build
 
