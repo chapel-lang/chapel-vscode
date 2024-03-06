@@ -3,10 +3,11 @@
 ## Core Features
 
 - Intellisense
-  - GotoDefinition: jump to a symbol's definition
+  - Go to Definition: jump to or peek a symbol's definition
   - Hover: hover over a symbol to view its signature and documentation
+  - References: view all mentions of a symbol across a workspace
   - Code Completion: suggest completion for symbols in the current file
-  - Symbol List: see all symbols for a file
+  - Symbol List: see all symbols in a file
   - Errors/Warning: see Chapel errors and warnings
 - Linting
   - see Chapel linter warnings on potential errors and style suggestions
@@ -19,6 +20,12 @@
   - Inlays: view values, types, and named call arguments inline with code
   - Generic Instantiations: inspect generic code with helpful annotations
   - Dead Code: highlight dead code that will never execute
+
+> **_:warning: CAUTION:_**
+> These features use a work-in-progress resolver for Chapel called Dyno to further
+> inspect your code. To enable these features, use Dyno by setting
+> `chapel.chpl-language-server.resolver` to `true`. Enabling the Dyno resolver
+> for most Chapel projects will likely result in a crash.
 
 ## Setup
 
