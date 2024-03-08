@@ -314,6 +314,7 @@ export abstract class ChapelLanguageClient {
   stop(): Promise<void> {
     return new Promise((resolve, reject) => {
       if (this.client && this.state === LanguageClientState.RUNNING) {
+        this.client.errorHandler = () => {};
         this.client.stop().catch(reject);
         this.client.dispose();
         this.client = undefined;
