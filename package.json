@@ -1,6 +1,6 @@
 {
   "name": "chapel-vscode",
-  "displayName": "Chapel",
+  "displayName": "Chapel Language",
   "description": "A collection of development tools for programming in Chapel",
   "version": "0.0.2",
   "engines": {
