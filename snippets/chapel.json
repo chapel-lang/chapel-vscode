@@ -8,9 +8,128 @@
     ],
     "description": "a simple parallel loop"
   },
+  "forall-single": {
+    "prefix": "forall",
+    "body": [
+      "forall $1 in $2 do $3;"
+    ],
+    "description": "a simple parallel loop -- single line"
+  },
+  "for": {
+    "prefix": "for",
+    "body": [
+      "for $1 in $2 {",
+      "  $3",
+      "}"
+    ],
+    "description": "a simple serial loop"
+  },
+  "for-single": {
+    "prefix": "for",
+    "body": [
+      "for $1 in $2 do $3;"
+    ],
+    "description": "a simple serial loop -- single line"
+  },
+  "while": {
+    "prefix": "while",
+    "body": [
+      "while $1 {",
+      "  $2",
+      "}"
+    ],
+    "description": "while construct"
+  },
+  "while-single": {
+    "prefix": "while",
+    "body": [
+      "while $1 do $2;"
+    ],
+    "description": "while construct -- single line"
+  },
+  "dowhile": {
+    "prefix": "dowhile",
+    "body": [
+      "do {",
+      "  $1",
+      "} while $2;"
+    ],
+    "description": "while construct"
+  },
+  "if": {
+    "prefix": "if",
+    "body": [
+      "if $1 {",
+      "  $2",
+      "}"
+    ],
+    "description": "if statement"
+  },
+  "if-single": {
+    "prefix": "if",
+    "body": [
+      "if $1 then $2;"
+    ],
+    "description": "if statement -- single line"
+  },
+  "ifelse": {
+    "prefix": "ifelse",
+    "body": [
+      "if $1 {",
+      "  $2",
+      "} else {",
+      "  $3",
+      "}"
+    ],
+    "description": "if else statement"
+  },
+  "ifelse-single": {
+    "prefix": "ifelse",
+    "body": [
+      "if $1 then $2; else $3;"
+    ],
+    "description": "if else statement -- single line"
+  },
+  "select": {
+    "prefix": "select",
+    "body": [
+      "select $1 {",
+      "  when $2 do $3;",
+      "  otherwise $4",
+      "}"
+    ],
+    "description": "select block"
+  },
+  "proc": {
+    "prefix": "proc",
+    "body": [
+      "proc $1($2) {",
+      "  $3",
+      "}"
+    ],
+    "description": "procedure definition"
+  },
+  "proc-single": {
+    "prefix": "proc",
+    "body": [
+      "proc $1($2) return $3;"
+    ],
+    "description": "procedure definition -- single line"
+  },
+  "iter": {
+    "prefix": "iter",
+    "body": [
+      "iter $1() {",
+      "  $2",
+      "}"
+    ],
+    "description": "iterator definition"
+  },
   "writeln": {
     "prefix": "writeln",
-    "body": ["writeln($1);"],
+    "body": [
+      "writeln($1);"
+    ],
     "description": "simple print statement"
   },
   "on": {
@@ -22,9 +141,199 @@
     ],
     "description": "migrate execute to another locale"
   },
+  "var": {
+    "prefix": "var",
+    "body": [
+      "var $1: $2 = $3;"
+    ],
+    "description": "variable declaration"
+  },
+  "const": {
+    "prefix": "const",
+    "body": [
+      "const $1: $2 = $3;"
+    ],
+    "description": "constant declaration"
+  },
+  "param": {
+    "prefix": "param",
+    "body": [
+      "param $1: $2 = $3;"
+    ],
+    "description": "compile-time constant"
+  },
+  "config-const": {
+    "prefix": "configconst",
+    "body": [
+      "config const $1: $2 = $3;"
+    ],
+    "description": "runtime command line argument (./prog --<varname>=<value>)"
+  },
+  "config-param": {
+    "prefix": "configparam",
+    "body": [
+      "config param $1: $2 = $3;"
+    ],
+    "description": "compile-time command line argument (chpl -s<varname>=<value> prog.chpl)"
+  },
+  "module": {
+    "prefix": "module",
+    "body": [
+      "module $1",
+      "  $2",
+      "}"
+    ],
+    "description": "module skeleton"
+  },
+  "use": {
+    "prefix": "use",
+    "body": [
+      "use $1;"
+    ],
+    "description": "module use"
+  },
+  "type": {
+    "prefix": "type",
+    "body": [
+      "type"
+    ],
+    "description": "type declaration"
+  },
+  "bool": {
+    "prefix": "bool",
+    "body": [
+      "bool"
+    ],
+    "description": "boolean type (size implementation dependent)"
+  },
+  "int": {
+    "prefix": "int",
+    "body": [
+      "int"
+    ],
+    "description": "integer type (size=64)"
+  },
+  "uint": {
+    "prefix": "uint",
+    "body": [
+      "uint"
+    ],
+    "description": "unsigned integer type (size=64)"
+  },
+  "real": {
+    "prefix": "real",
+    "body": [
+      "real"
+    ],
+    "description": "real type (size=64)"
+  },
+  "imag": {
+    "prefix": "imag",
+    "body": [
+      "imag"
+    ],
+    "description": "imaginary type (size=64)"
+  },
+  "complex": {
+    "prefix": "complex",
+    "body": [
+      "complex"
+    ],
+    "description": "complex type (size=128)"
+  },
+  "string": {
+    "prefix": "string",
+    "body": [
+      "string"
+    ],
+    "description": "string type"
+  },
+  "record": {
+    "prefix": "record",
+    "body": [
+      "record $1 {",
+      "  $2",
+      "}"
+    ],
+    "description": "record definition"
+  },
+  "class": {
+    "prefix": "class",
+    "body": [
+      "class $1 {",
+      "  $2",
+      "}"
+    ],
+    "description": "class definition"
+  },
+  "method": {
+    "prefix": "method",
+    "body": [
+      "proc $1.$2($3) {",
+      "  $4",
+      "}"
+    ],
+    "description": "define a class method"
+  },
+  "method-override": {
+    "prefix": "override",
+    "body": [
+      "override proc $1.$2($3) {",
+      "  $4",
+      "}"
+    ],
+    "description": "override a class method"
+  },
+  "union": {
+    "prefix": "union",
+    "body": [
+      "union $1 {",
+      "  var $2;",
+      "  var $3;",
+      "}"
+    ],
+    "description": "define a union with two alternatives"
+  },
+  "enum": {
+    "prefix": "enum",
+    "body": [
+      "enum $1 { $2, $3 };"
+    ],
+    "description": "enumeration with two alternatives"
+  },
+  "range": {
+    "prefix": "range",
+    "body": [
+      "$1..$2"
+    ],
+    "description": "bounded range"
+  },
+  "by": {
+    "prefix": "by",
+    "body": [
+      "$1 by $2"
+    ],
+    "description": "strided range"
+  },
+  "counted": {
+    "prefix": "#",
+    "body": [
+      "$1 # $2"
+    ],
+    "description": "counted range"
+  },
+  "align": {
+    "prefix": "align",
+    "body": [
+      "$1 align $2"
+    ],
+    "description": "aligned range"
+  },
   "Locales": {
     "prefix": "Locales",
-    "body": ["Locales"],
+    "body": [
+      "Locales"
+    ],
     "description": "Locales array"
   },
   "all-tasks": {
