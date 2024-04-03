@@ -204,7 +204,7 @@
     "body": [
       "bool"
     ],
-    "description": "boolean type (size implementation dependent)"
+    "description": "boolean type"
   },
   "int": {
     "prefix": "int",
@@ -323,7 +323,7 @@
     "description": "strided range"
   },
   "counted": {
-    "prefix": "#",
+    "prefix": ["#", "counted"],
     "body": [
       "$1 # $2"
     ],
