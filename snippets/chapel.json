@@ -45,7 +45,7 @@
     "body": [
       "while $1 do $2;"
     ],
-    "description": "while construct -- single line"
+    "description": "while loop -- single line"
   },
   "dowhile": {
     "prefix": "dowhile",
@@ -54,7 +54,7 @@
       "  $1",
       "} while $2;"
     ],
-    "description": "while construct"
+    "description": "do-while loop"
   },
   "if": {
     "prefix": "if",
@@ -86,7 +86,7 @@
   "ifelse-single": {
     "prefix": "ifelse",
     "body": [
-      "if $1 then $2; else $3;"
+      "if $1 then $2 else $3;"
     ],
     "description": "if else statement -- single line"
   },
@@ -112,15 +112,15 @@
   "proc-single": {
     "prefix": "proc",
     "body": [
-      "proc $1($2) return $3;"
+      "proc $1($2) do $3;"
     ],
     "description": "procedure definition -- single line"
   },
   "iter": {
     "prefix": "iter",
     "body": [
-      "iter $1() {",
-      "  $2",
+      "iter $1($2) {",
+      "  $3",
       "}"
     ],
     "description": "iterator definition"
@@ -179,7 +179,7 @@
   "module": {
     "prefix": "module",
     "body": [
-      "module $1",
+      "module $1 {",
       "  $2",
       "}"
     ],
@@ -306,7 +306,14 @@
     "body": [
       "$1..$2"
     ],
-    "description": "bounded range"
+    "description": "bounded range [$1,$2]"
+  },
+  "openrange": {
+    "prefix": "openrange",
+    "body": [
+      "$1..<$2"
+    ],
+    "description": "open-interval range [$1,$2)"
   },
   "by": {
     "prefix": "by",
