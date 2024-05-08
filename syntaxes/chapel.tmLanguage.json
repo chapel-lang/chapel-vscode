@@ -129,11 +129,15 @@
     "string_format": {
       "patterns": [
         {
-          "match": "%%",
+          "match": "(%[{]([#]+|[#]*[.][#]+)[}])",
           "name": "constant.other.placeholder.chapel"
         },
         {
-          "match": "%[0-9]+\\.[0-9]*(i|di|u|du|bi|bu||@bu|oi|ou)",
+          "match": "(%(@|\\+|0|<|>|\\^)*(\\*|[0-9]+)?(\\.[0-9]*)?[dxXobjh'\"]?[eE]?([niurmzsSc]|([{](.S|\\*S|.S.)[}])|(/.*/)|([{]/.*/[a-zA-Z]+[}]))?)",
+          "name": "constant.other.placeholder.chapel"
+        },
+        {
+          "match": "(%%)",
           "name": "constant.other.placeholder.chapel"
         }
       ]
