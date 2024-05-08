@@ -28,12 +28,12 @@ export function checkChplHome(
     return "CHPL_HOME is not set";
   }
 
-  if (!path.isAbsolute(chplhome)) {
-    return `CHPL_HOME (${chplhome}) is not an absolute path`;
-  }
-
   if (!fs.existsSync(chplhome) || !fs.statSync(chplhome).isDirectory()) {
     return `CHPL_HOME (${chplhome}) does not exist`;
+  }
+
+  if (!path.isAbsolute(chplhome)) {
+    return `CHPL_HOME (${chplhome}) is not an absolute path`;
   }
 
   const subdirs = [
@@ -75,6 +75,12 @@ function searchDirectoryForChplHome(dir: string, depth: number = 1): string[] {
     if (checkChplHome(dir) === undefined) {
       chplhomes.push(dir);
     } else if (fs.existsSync(dir) && fs.statSync(dir).isDirectory()) {
+      try {
+        // sadly this is the only way synchronous way to check if the directory is readable
+        fs.accessSync(dir, fs.constants.R_OK);
+      } catch(err) {
+        return chplhomes;
+      }
       fs.readdirSync(dir).forEach((subdir) => {
         const subdir_path = path.join(dir, subdir);
         chplhomes.push(...searchDirectoryForChplHome(subdir_path, depth - 1));
