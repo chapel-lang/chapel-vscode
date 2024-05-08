@@ -97,7 +97,7 @@ export function findPossibleChplHomes(): string[] {
 
   // as a best effort, we find chpl in the PATH and check if chplhome is the parent directory
   const PATH = process.env["PATH"];
-  const paths_to_check = PATH?.split(":") ?? [];
+  const paths_to_check = PATH?.split(path.delimiter) ?? [];
   for (const p of paths_to_check) {
     const chpl_path = path.join(p, "chpl");
     if (fs.existsSync(chpl_path) && fs.statSync(chpl_path).isFile()) {
