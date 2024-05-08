@@ -43,7 +43,12 @@ export function getChplHome(): string {
 export function setChplHome(chplhome: string) {
   const config = vscode.workspace.getConfiguration(configScope);
 
-  // when updating CHPL_HOME, we should update the workspace config if its been overriden, otherwise set it globally for all users
+  // an unfortunate aspect of the vscode API is that it doesn't allow us to
+  // distinguish between global local and global remote settings. This means
+  // this code may edit the wrong config file, because it will prefer the
+  // global local settings over the global remote settings. This is a known
+  // issue with the vscode API:
+  // https://github.com/microsoft/vscode/issues/182696
   if(config.inspect("CHPL_HOME")?.workspaceValue !== undefined) {
     config.update("CHPL_HOME", chplhome, vscode.ConfigurationTarget.Workspace);
   } else {
