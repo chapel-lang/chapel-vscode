@@ -57,7 +57,7 @@
           "name": "keyword.operator.assignment.augmented.chapel"
         },
         {
-          "match": "\\+|-|\\*|\\*\\*|/|%|<<|>>|&|(\\|)|\\^|~|<=>|\\.\\.<|\\.\\.#|\\.\\.\\.|\\.\\.",
+          "match": "\\+|-|\\*|\\*\\*|/|%|<<|>>|&|(\\|)|\\^|~|<=>|\\.\\.<|#|\\.\\.\\.|\\.\\.",
           "name": "keyword.operator.arithmetic.chapel"
         },
         {
