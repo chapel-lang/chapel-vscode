@@ -25,26 +25,26 @@ import {
   setChplHome,
 } from "./configuration";
 import { ChplCheckClient, CLSClient } from "./ChapelLanguageClient";
-import { buildTools, checkChplHome, findPossibleChplHomes } from "./ChplPaths";
+import { checkChplHome, findPossibleChplHomes } from "./ChplPaths";
 
 let chplcheckClient: ChplCheckClient;
 let clsClient: CLSClient;
 let logger: vscode.LogOutputChannel;
 
-function showChplHomeMissingError(errorString?: string) {
+export function showChplHomeMissingError(errorString?: string) {
   if (errorString) {
     logger.error(errorString);
   }
   vscode.window
     .showErrorMessage(
-      "CHPL_HOME is either missing or incorrect, make sure the path is correct",
+      "CHPL_HOME is incorrect, make sure the path is correct",
       "Find CHPL_HOME",
       "Show Log",
       "Ok"
     )
     .then((value) => {
       if (value === "Find CHPL_HOME") {
-        vscode.commands.executeCommand("chapel.findChpl");
+        vscode.commands.executeCommand("chapel.findChplHome");
       } else if (value === "Show Log") {
         logger.show();
       }
@@ -84,7 +84,7 @@ export function activate(context: vscode.ExtensionContext) {
   logger.info("Chapel extension activated");
 
   context.subscriptions.push(
-    vscode.commands.registerCommand("chapel.findChpl", async () => {
+    vscode.commands.registerCommand("chapel.findChplHome", async () => {
       // show a selection to let the user select the proper CHPL_HOME
       let choices = findPossibleChplHomes();
       if (choices.length === 0) {
@@ -94,47 +94,34 @@ export function activate(context: vscode.ExtensionContext) {
       }
     })
   );
-  context.subscriptions.push(
-    vscode.commands.registerCommand(
-      "chapel.buildTools",
-      async (chplhome?: string) => {
-        if (chplhome === undefined) {
-          chplhome = getChplHome();
-        }
-        if (checkChplHome(chplhome) === undefined) {
-          buildTools(chplhome);
-        } else {
-          vscode.window.showWarningMessage(
-            `Unable to build automatically, please build manually`
-          );
-        }
-      }
-    )
-  );
-
-  const chplhome = getChplHome();
-  const chplHomeError = checkChplHome(chplhome);
-  if (chplHomeError !== undefined) {
-    showChplHomeMissingError(chplHomeError);
-  }
+  // context.subscriptions.push(
+  //   vscode.commands.registerCommand(
+  //     "chapel.buildTools",
+  //     async (chplhome?: string) => {
+  //       if (chplhome === undefined) {
+  //         chplhome = getChplHome();
+  //       }
+  //       if (checkChplHome(chplhome) === undefined) {
+  //         buildTools(chplhome);
+  //       } else {
+  //         vscode.window.showWarningMessage(
+  //           `Unable to build automatically, please build manually`
+  //         );
+  //       }
+  //     }
+  //   )
+  // );
 
   chplcheckClient = new ChplCheckClient(
-    chplhome,
     getChplCheckConfig(),
     "chplcheck",
     logger
   );
   clsClient = new CLSClient(
-    chplhome,
     getCLSConfig(),
     "chpl-language-server",
     logger
   );
-
-  if (chplHomeError !== undefined) {
-    chplcheckClient.setErrorState();
-    clsClient.setErrorState();
-  }
 
   // Restart language server command
   context.subscriptions.push(
@@ -155,14 +142,9 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.workspace.onDidChangeConfiguration(async (e) => {
       if (e.affectsConfiguration("chapel")) {
-        const chplhome = getChplHome();
-        const chplHomeError = checkChplHome(chplhome);
-        if (chplHomeError !== undefined) {
-          showChplHomeMissingError(chplHomeError);
-        }
         Promise.all([
-          chplcheckClient.resetConfig(chplhome, getChplCheckConfig()),
-          clsClient.resetConfig(chplhome, getCLSConfig()),
+          chplcheckClient.resetConfig(getChplCheckConfig()),
+          clsClient.resetConfig(getCLSConfig()),
         ]);
       }
     })

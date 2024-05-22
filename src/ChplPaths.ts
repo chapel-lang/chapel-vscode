@@ -20,6 +20,8 @@
 import * as path from "path";
 import * as fs from "fs";
 import * as vscode from "vscode";
+import * as cfg from "./configuration";
+import assert from "assert";
 
 export function checkChplHome(
   chplhome: string | undefined
@@ -62,11 +64,61 @@ export function checkChplHome(
   return undefined;
 }
 
+// take a callback to be called on each file found
+// if the callback returns true, stop searching
+function searchPATH(file: string, callback: (file_path: string) => boolean | void) {
+  const PATH = process.env["PATH"];
+  const paths_to_check = PATH?.split(path.delimiter) ?? [];
+  for (const p of paths_to_check) {
+    const file_path = path.join(p, file);
+    if (fs.existsSync(file_path) && fs.statSync(file_path).isFile()) {
+      const r = callback(file_path);
+      if (r !== undefined && r === true) {
+        break;
+      }
+    }
+  }
+}
+
 export function checkToolPath(tool_path: string): string | undefined {
   if (!fs.existsSync(tool_path) || !fs.statSync(tool_path).isFile()) {
     return `${tool_path} does not exist`;
   }
   return undefined;
+}
+
+export function findToolPath(
+  tool_name: string,
+  chplhome: string | undefined
+): string | undefined {
+  assert(tool_name === "chplcheck" || tool_name === "chpl-language-server");
+
+  // 1. if there is a path in config, use that.
+  // 2. if there is a chplhome, use that
+  // 3. otherwise, search PATH
+
+  const cfg_tool_path = tool_name === "chplcheck" ? cfg.getChplCheckConfig().path : cfg.getCLSConfig().path;
+  if (cfg_tool_path !== undefined) {
+    const error = checkToolPath(cfg_tool_path);
+    if (error === undefined) {
+      return cfg_tool_path;
+    }
+  }
+
+  if (chplhome !== undefined && checkChplHome(chplhome) === undefined) {
+    const tool_path = path.join(chplhome, "tools", tool_name, tool_name);
+    const error = checkToolPath(tool_path);
+    if (error === undefined) {
+      return tool_path;
+    }
+  }
+
+  let tool_path: string | undefined = undefined;
+  searchPATH(tool_name, (file_path) => {
+    tool_path = file_path;
+    return true;
+  });
+  return tool_path;
 }
 
 function searchDirectoryForChplHome(dir: string, depth: number = 1): string[] {
@@ -102,20 +154,15 @@ export function findPossibleChplHomes(): string[] {
   // but we cannot execute shell commands and get their result with the vscode api
 
   // as a best effort, we find chpl in the PATH and check if chplhome is the parent directory
-  const PATH = process.env["PATH"];
-  const paths_to_check = PATH?.split(path.delimiter) ?? [];
-  for (const p of paths_to_check) {
-    const chpl_path = path.join(p, "chpl");
-    if (fs.existsSync(chpl_path) && fs.statSync(chpl_path).isFile()) {
-      const chplhome = path.dirname(path.dirname(chpl_path));
-      if (
-        checkChplHome(chplhome) === undefined &&
-        possibleChplHomes.indexOf(chplhome) === -1
-      ) {
-        possibleChplHomes.push(chplhome);
-      }
+  searchPATH("chpl", (chpl_path) => {
+    const chplhome = path.dirname(path.dirname(chpl_path));
+    if (
+      checkChplHome(chplhome) === undefined &&
+      possibleChplHomes.indexOf(chplhome) === -1
+    ) {
+      possibleChplHomes.push(chplhome);
     }
-  }
+  });
   // as a best effort, we can also check `/opt` and `/opt/homebrew/Cellar/chapel` for chplhome, searching to a depth of 3
   const dirs_to_check = ["/opt", "/opt/homebrew/Cellar/chapel/"];
   for (const dir of dirs_to_check) {
@@ -134,20 +181,29 @@ export function cloneEnv() {
   return env;
 }
 
-export function buildTools(chplhome: string) {
-  let env = cloneEnv();
-  const term = vscode.window.createTerminal({ cwd: chplhome, env: env });
-  term.sendText(`make chpl-language-server || exit 1 && make chplcheck || exit 1 && exit 0`);
-  term.show();
-  vscode.window.onDidChangeTerminalState((e) => {
-    if (e === term && e.exitStatus !== undefined) {
-      if (e.exitStatus.code === 0) {
-        vscode.window.showInformationMessage("Build complete");
-        vscode.commands.executeCommand("chplcheck.restart");
-        vscode.commands.executeCommand("chpl-language-server.restart");
-      } else {
-        vscode.window.showWarningMessage(`Build failed, try running 'export CHPL_HOME=${chplhome} && make chpl-language-server && make chplcheck' in the CHPL_HOME directory to see the error message.`);
-      }
-    }
-  })
+// export function buildTools(chplhome: string) {
+//   let env = cloneEnv();
+//   const term = vscode.window.createTerminal({ cwd: chplhome, env: env });
+//   term.sendText(`make chpl-language-server || exit 1 && make chplcheck || exit 1 && exit 0`);
+//   term.show();
+//   vscode.window.onDidChangeTerminalState((e) => {
+//     if (e === term && e.exitStatus !== undefined) {
+//       if (e.exitStatus.code === 0) {
+//         vscode.window.showInformationMessage("Build complete");
+//         vscode.commands.executeCommand("chplcheck.restart");
+//         vscode.commands.executeCommand("chpl-language-server.restart");
+//       } else {
+//         vscode.window.showWarningMessage(`Build failed, try running 'export CHPL_HOME=${chplhome} && make chpl-language-server && make chplcheck' in the CHPL_HOME directory to see the error message.`);
+//       }
+//     }
+//   })
+// }
+
+export function getWorkspaceFolder(): vscode.WorkspaceFolder | undefined {
+  const editor = vscode.window.activeTextEditor;
+  if (editor === undefined) {
+    return undefined;
+  }
+  const doc = editor.document;
+  return vscode.workspace.getWorkspaceFolder(doc.uri);
 }

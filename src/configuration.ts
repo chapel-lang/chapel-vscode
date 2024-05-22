@@ -22,8 +22,9 @@ import * as vscode from "vscode";
 export interface ToolConfig {
   args: Array<string>;
   enable: boolean;
+  path: string | undefined;
 }
-const ToolConfigDefault: ToolConfig = {args: [], enable: false};
+const ToolConfigDefault: ToolConfig = {args: [], enable: false, path: undefined};
 
 export type ChplCheckConfig = ToolConfig;
 const ChplCheckConfigDefault: ChplCheckConfig = {...ToolConfigDefault };
@@ -35,10 +36,10 @@ const CLSConfigDefault: CLSConfig = {...ToolConfigDefault, resolver: false};
 
 const configScope = "chapel";
 
-export function getChplHome(): string {
+export function getChplHome(): string | undefined {
   const config = vscode.workspace.getConfiguration(configScope);
   const chplhome = config.get<string>("CHPL_HOME");
-  return chplhome ?? "";
+  return chplhome ?? undefined;
 }
 export function setChplHome(chplhome: string) {
   const config = vscode.workspace.getConfiguration(configScope);
