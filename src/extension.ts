@@ -94,23 +94,6 @@ export function activate(context: vscode.ExtensionContext) {
       }
     })
   );
-  // context.subscriptions.push(
-  //   vscode.commands.registerCommand(
-  //     "chapel.buildTools",
-  //     async (chplhome?: string) => {
-  //       if (chplhome === undefined) {
-  //         chplhome = getChplHome();
-  //       }
-  //       if (checkChplHome(chplhome) === undefined) {
-  //         buildTools(chplhome);
-  //       } else {
-  //         vscode.window.showWarningMessage(
-  //           `Unable to build automatically, please build manually`
-  //         );
-  //       }
-  //     }
-  //   )
-  // );
 
   chplcheckClient = new ChplCheckClient(
     getChplCheckConfig(),

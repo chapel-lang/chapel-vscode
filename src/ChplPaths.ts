@@ -184,24 +184,6 @@ export function cloneEnv() {
   return env;
 }
 
-// export function buildTools(chplhome: string) {
-//   let env = cloneEnv();
-//   const term = vscode.window.createTerminal({ cwd: chplhome, env: env });
-//   term.sendText(`make chpl-language-server || exit 1 && make chplcheck || exit 1 && exit 0`);
-//   term.show();
-//   vscode.window.onDidChangeTerminalState((e) => {
-//     if (e === term && e.exitStatus !== undefined) {
-//       if (e.exitStatus.code === 0) {
-//         vscode.window.showInformationMessage("Build complete");
-//         vscode.commands.executeCommand("chplcheck.restart");
-//         vscode.commands.executeCommand("chpl-language-server.restart");
-//       } else {
-//         vscode.window.showWarningMessage(`Build failed, try running 'export CHPL_HOME=${chplhome} && make chpl-language-server && make chplcheck' in the CHPL_HOME directory to see the error message.`);
-//       }
-//     }
-//   })
-// }
-
 export function getWorkspaceFolder(): vscode.WorkspaceFolder | undefined {
   const editor = vscode.window.activeTextEditor;
   if (editor === undefined) {
