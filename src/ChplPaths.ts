@@ -81,6 +81,9 @@ function searchPATH(file: string, callback: (file_path: string) => boolean | voi
 }
 
 export function checkToolPath(tool_path: string): string | undefined {
+  if (tool_path === "") {
+    return "Path is empty";
+  }
   if (!fs.existsSync(tool_path) || !fs.statSync(tool_path).isFile()) {
     return `${tool_path} does not exist`;
   }
