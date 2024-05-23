@@ -24,15 +24,19 @@ export interface ToolConfig {
   enable: boolean;
   path: string | undefined;
 }
-const ToolConfigDefault: ToolConfig = {args: [], enable: false, path: undefined};
+const ToolConfigDefault: ToolConfig = {
+  args: [],
+  enable: false,
+  path: undefined,
+};
 
 export type ChplCheckConfig = ToolConfig;
-const ChplCheckConfigDefault: ChplCheckConfig = {...ToolConfigDefault };
+const ChplCheckConfigDefault: ChplCheckConfig = { ...ToolConfigDefault };
 
 export interface CLSConfig extends ToolConfig {
   resolver: boolean;
 }
-const CLSConfigDefault: CLSConfig = {...ToolConfigDefault, resolver: false};
+const CLSConfigDefault: CLSConfig = { ...ToolConfigDefault, resolver: false };
 
 const configScope = "chapel";
 
@@ -50,7 +54,7 @@ export function setChplHome(chplhome: string) {
   // global local settings over the global remote settings. This is a known
   // issue with the vscode API:
   // https://github.com/microsoft/vscode/issues/182696
-  if(config.inspect("CHPL_HOME")?.workspaceValue !== undefined) {
+  if (config.inspect("CHPL_HOME")?.workspaceValue !== undefined) {
     config.update("CHPL_HOME", chplhome, vscode.ConfigurationTarget.Workspace);
   } else {
     config.update("CHPL_HOME", chplhome, vscode.ConfigurationTarget.Global);
@@ -64,7 +68,8 @@ export function getChplDeveloper(): boolean {
 
 export function getChplCheckConfig(): ChplCheckConfig {
   const config = vscode.workspace.getConfiguration(configScope);
-  const chplcheck = config.get<ChplCheckConfig>("chplcheck") ?? ChplCheckConfigDefault;
+  const chplcheck =
+    config.get<ChplCheckConfig>("chplcheck") ?? ChplCheckConfigDefault;
   return chplcheck;
 }
 

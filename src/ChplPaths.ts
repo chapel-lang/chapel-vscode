@@ -21,6 +21,7 @@ import * as path from "path";
 import * as fs from "fs";
 import * as vscode from "vscode";
 import * as cfg from "./configuration";
+import { showInvalidPathWarning } from "./extension";
 import assert from "assert";
 
 export function checkChplHome(
@@ -66,7 +67,10 @@ export function checkChplHome(
 
 // take a callback to be called on each file found
 // if the callback returns true, stop searching
-function searchPATH(file: string, callback: (file_path: string) => boolean | void) {
+function searchPATH(
+  file: string,
+  callback: (file_path: string) => boolean | void
+) {
   const PATH = process.env["PATH"];
   const paths_to_check = PATH?.split(path.delimiter) ?? [];
   for (const p of paths_to_check) {
@@ -100,12 +104,12 @@ export function findToolPath(
   // 2. if there is a chplhome, use that
   // 3. otherwise, search PATH
 
-  const cfg_tool_path = tool_name === "chplcheck" ? cfg.getChplCheckConfig().path : cfg.getCLSConfig().path;
-  if (cfg_tool_path !== undefined) {
-    const error = checkToolPath(cfg_tool_path);
-    if (error === undefined) {
-      return cfg_tool_path;
-    }
+  const cfg_tool_path =
+    tool_name === "chplcheck"
+      ? cfg.getChplCheckConfig().path
+      : cfg.getCLSConfig().path;
+  if (cfg_tool_path !== undefined && cfg_tool_path !== "") {
+    return cfg_tool_path;
   }
 
   if (chplhome !== undefined && checkChplHome(chplhome) === undefined) {
@@ -133,7 +137,7 @@ function searchDirectoryForChplHome(dir: string, depth: number = 1): string[] {
       try {
         // sadly this is the only way synchronous way to check if the directory is readable
         fs.accessSync(dir, fs.constants.R_OK);
-      } catch(err) {
+      } catch (err) {
         return chplhomes;
       }
       fs.readdirSync(dir).forEach((subdir) => {

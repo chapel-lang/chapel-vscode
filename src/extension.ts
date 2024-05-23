@@ -31,6 +31,27 @@ let chplcheckClient: ChplCheckClient;
 let clsClient: CLSClient;
 let logger: vscode.LogOutputChannel;
 
+export function showInvalidPathWarning(
+  tool: string,
+  path: string,
+  errorString?: string
+) {
+  if (errorString) {
+    logger.warn(errorString);
+  }
+
+  let msg = `The path '${path}' for ${tool} is invalid, errors may occur. Please double check that this is the correct path.`;
+  if (path === "") {
+    msg = `The path for ${tool} is not set, errors may occur. Please either set the path or remove the empty path.`;
+  }
+
+  vscode.window.showWarningMessage(msg, "Show Log", "Ok").then((value) => {
+    if (value === "Show Log") {
+      logger.show();
+    }
+  });
+}
+
 export function showChplHomeMissingError(errorString?: string) {
   if (errorString) {
     logger.error(errorString);
@@ -54,7 +75,8 @@ export function showChplHomeMissingError(errorString?: string) {
 function pickMyOwnChplHome() {
   vscode.window
     .showInputBox({
-      placeHolder: "Enter the path to CHPL_HOME (possibly run `chpl --print-chpl-home` in the terminal to find it)",
+      placeHolder:
+        "Enter the path to CHPL_HOME (possibly run `chpl --print-chpl-home` in the terminal to find it)",
     })
     .then((selection) => {
       if (selection !== undefined) {
@@ -100,11 +122,7 @@ export function activate(context: vscode.ExtensionContext) {
     "chplcheck",
     logger
   );
-  clsClient = new CLSClient(
-    getCLSConfig(),
-    "chpl-language-server",
-    logger
-  );
+  clsClient = new CLSClient(getCLSConfig(), "chpl-language-server", logger);
 
   // Restart language server command
   context.subscriptions.push(

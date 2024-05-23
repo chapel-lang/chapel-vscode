@@ -29,7 +29,7 @@ import {
   findPossibleChplHomes,
   getWorkspaceFolder,
 } from "./ChplPaths";
-import {showChplHomeMissingError} from "./extension";
+import { showChplHomeMissingError } from "./extension";
 import * as path from "path";
 
 export enum LanguageClientState {
@@ -76,6 +76,7 @@ export abstract class ChapelLanguageClient {
   tool_path: string;
   client: ErrorHandlingClient | undefined;
   logger: vscode.LogOutputChannel;
+  statusBarItem: vscode.StatusBarItem;
 
   constructor(
     config: ToolConfig,
@@ -90,6 +91,21 @@ export abstract class ChapelLanguageClient {
     this.tool_path = this.getToolPath();
     this.client = undefined;
     this.logger = logger;
+    this.statusBarItem = vscode.window.createStatusBarItem(
+      vscode.StatusBarAlignment.Right,
+      1000
+    );
+    // render the text using vscode codicons
+    this.statusBarItem.text = `$(error) ${this.name}`;
+    this.statusBarItem.tooltip = `${this.name} is stopped. Click to restart.`;
+    this.statusBarItem.color = new vscode.ThemeColor(
+      "statusBarItem.errorForeground"
+    );
+    this.statusBarItem.backgroundColor = new vscode.ThemeColor(
+      "statusBarItem.errorBackground"
+    );
+    this.statusBarItem.command = `${this.name}.restart`;
+    this.statusBarItem.hide();
   }
 
   protected abstract getToolPath(): string;
@@ -109,6 +125,7 @@ export abstract class ChapelLanguageClient {
 
   setErrorState() {
     this.state = LanguageClientState.ERRORED;
+    this.statusBarItem.show();
   }
 
   clearError(): void {
@@ -116,6 +133,7 @@ export abstract class ChapelLanguageClient {
   }
 
   private errorFindTools() {
+    this.setErrorState();
     // if invalid chplhome, prompt user to set it
     // if missing tool path, warn user that we can't find it, tell them to not override the path or upgrade their chapel version
     // otherwise, its likely the tools arent built, so prompt the user to build them
@@ -172,11 +190,11 @@ export abstract class ChapelLanguageClient {
       return Promise.resolve();
     }
     this.state = LanguageClientState.STARTING;
+    this.statusBarItem.hide();
     let toolPathError = checkToolPath(this.tool_path);
     if (toolPathError !== undefined) {
       this.logger.error(toolPathError);
       this.errorFindTools();
-      this.state = LanguageClientState.STOPPED;
       return Promise.reject();
     }
 
@@ -251,7 +269,7 @@ export abstract class ChapelLanguageClient {
       }
 
       this.stop().finally(() => {
-        this.state = LanguageClientState.ERRORED;
+        this.setErrorState();
 
         vscode.window
           .showErrorMessage(
