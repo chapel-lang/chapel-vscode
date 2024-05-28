@@ -82,13 +82,8 @@
     ],
     "commands": [
       {
-        "command": "chapel.findChpl",
-        "title": "Find Chapel",
-        "category": "chapel"
-      },
-      {
-        "command": "chapel.buildTools",
-        "title": "Build chpl-language-server and chplcheck",
+        "command": "chapel.findChplHome",
+        "title": "Find CHPL_HOME",
         "category": "chapel"
       },
       {
@@ -114,7 +109,7 @@
           "chapel.CHPL_HOME": {
             "scope": "window",
             "type": "string",
-            "description": "CHPL_HOME"
+            "description": "The path to CHPL_HOME. If not provided, the extension may be able to find it automatically if `chpl`, `chplcheck`, and `chpl-language-server` are in PATH."
           },
           "chapel.CHPL_DEVELOPER": {
             "scope": "window",
@@ -127,6 +122,11 @@
             "type": "boolean",
             "default": true,
             "description": "Enable chplcheck"
+          },
+          "chapel.chplcheck.path": {
+            "scope": "window",
+            "type": "string",
+            "description": "An explicit path to the chplcheck executable. If not provided, the extension will look for chplcheck in PATH and in CHPL_HOME"
           },
           "chapel.chplcheck.args": {
             "scope": "window",
@@ -142,6 +142,11 @@
             "type": "boolean",
             "default": true,
             "description": "Enable chpl-language-server"
+          },
+          "chapel.chpl-language-server.path": {
+            "scope": "window",
+            "type": "string",
+            "description": "An explicit path to the chpl-language-server executable. If not provided, the extension will look for chpl-language-server in PATH and in CHPL_HOME"
           },
           "chapel.chpl-language-server.resolver": {
             "scope": "window",

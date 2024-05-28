@@ -21,7 +21,7 @@
   - Generic Instantiations: inspect generic code with helpful annotations
   - Dead Code: highlight dead code that will never execute
 
-> **_:warning: CAUTION:_**
+> **_CAUTION:_**
 > These features use a work-in-progress resolver for Chapel called Dyno to further
 > inspect your code. To enable these features, use Dyno by setting
 > `chapel.chpl-language-server.resolver` to `true`. Enabling the Dyno resolver

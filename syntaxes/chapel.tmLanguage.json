@@ -57,7 +57,7 @@
           "name": "keyword.operator.assignment.augmented.chapel"
         },
         {
-          "match": "\\+|-|\\*|\\*\\*|/|%|<<|>>|&|(\\|)|\\^|~|<=>|\\.\\.<|\\.\\.#|\\.\\.\\.|\\.\\.",
+          "match": "\\+|-|\\*|\\*\\*|/|%|<<|>>|&|(\\|)|\\^|~|<=>|\\.\\.<|#|\\.\\.\\.|\\.\\.",
           "name": "keyword.operator.arithmetic.chapel"
         },
         {
@@ -80,20 +80,58 @@
           "match": "\\b(true|false|nil)\\b",
           "name": "constant.language.chapel"
         },
+        { "include": "#integers" },
+        { "include": "#floats" }
+      ]
+    },
+    "integers": {
+      "patterns": [
         {
-          "match": "\\b([0-9][0-9_]*)\\b",
+          "match": "\\b([0-9][0-9_]*)i?\\b",
           "name": "constant.numeric.chapel"
         },
         {
-          "match": "\\b(0[xX][0-9a-fA-F][0-9a-fA-F_]*)\\b",
+          "match": "\\b(0[xX][0-9a-fA-F][0-9a-fA-F_]*)i?\\b",
           "name": "constant.numeric.chapel"
         },
         {
-          "match": "\\b(0[bB][01][01_]*)\\b",
+          "match": "\\b(0[bB][01][01_]*)i?\\b",
           "name": "constant.numeric.chapel"
         },
         {
-          "match": "\\b(0[oO][0-7][0-7_]*)\\b",
+          "match": "\\b(0[oO][0-7][0-7_]*)i?\\b",
+          "name": "constant.numeric.chapel"
+        }
+      ]
+    },
+    "floats": {
+      "patterns": [
+        {
+          "match": "\\.([0-9][0-9_]*)([Ee](\\+|-)?([0-9][0-9_]*))?i?\\b",
+          "name": "constant.numeric.chapel"
+        },
+        {
+          "match": "\\b([0-9][0-9_]*)\\.([0-9][0-9_]*)([Ee](\\+|-)?([0-9][0-9_]*))?i?\\b",
+          "name": "constant.numeric.chapel"
+        },
+        {
+          "match": "\\b([0-9][0-9_]*)\\.([Ee](\\+|-)?([0-9][0-9_]*))i?\\b",
+          "name": "constant.numeric.chapel"
+        },
+        {
+          "match": "\\b([0-9][0-9_]*)([Ee](\\+|-)?([0-9][0-9_]*))i?\\b",
+          "name": "constant.numeric.chapel"
+        },
+        {
+          "match": "\\b0[xX]([0-9a-fA-F][0-9a-fA-F_]*)?\\.([0-9a-fA-F][0-9a-fA-F_]*)([Pp](\\+|-)?([0-9a-fA-F][0-9a-fA-F_]*))?i?\\b",
+          "name": "constant.numeric.chapel"
+        },
+        {
+          "match": "\\b0[xX]([0-9a-fA-F][0-9a-fA-F_]*)\\.([Pp](\\+|-)?([0-9a-fA-F][0-9a-fA-F_]*))i?\\b",
+          "name": "constant.numeric.chapel"
+        },
+        {
+          "match": "\\b0[xX]([0-9a-fA-F][0-9a-fA-F_]*)([Pp](\\+|-)?([0-9a-fA-F][0-9a-fA-F_]*))i?\\b",
           "name": "constant.numeric.chapel"
         }
       ]
@@ -129,11 +167,15 @@
     "string_format": {
       "patterns": [
         {
-          "match": "%%",
+          "match": "(%[{]([#]+|[#]*[.][#]+)[}])",
           "name": "constant.other.placeholder.chapel"
         },
         {
-          "match": "%[0-9]+\\.[0-9]*(i|di|u|du|bi|bu||@bu|oi|ou)",
+          "match": "(%(@|\\+|0|<|>|\\^)*(\\*|[0-9]+)?(\\.[0-9]*)?[dxXobjh'\"]?[eE]?([niurmzsSc]|([{](.S|\\*S|.S.)[}])|(/.*/)|([{]/.*/[a-zA-Z]+[}]))?)",
+          "name": "constant.other.placeholder.chapel"
+        },
+        {
+          "match": "(%%)",
           "name": "constant.other.placeholder.chapel"
         }
       ]

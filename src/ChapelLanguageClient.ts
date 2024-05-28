@@ -17,11 +17,19 @@
  * limitations under the License.
  */
 
-import { ToolConfig, getChplDeveloper } from "./configuration";
+import { ToolConfig, getChplDeveloper, getChplHome } from "./configuration";
 import * as fs from "fs";
 import * as vscode from "vscode";
 import * as vlc from "vscode-languageclient/node";
-import { checkToolPath, checkChplHome, cloneEnv } from "./ChplPaths";
+import {
+  checkToolPath,
+  checkChplHome,
+  cloneEnv,
+  findToolPath,
+  findPossibleChplHomes,
+  getWorkspaceFolder,
+} from "./ChplPaths";
+import { showChplHomeMissingError } from "./extension";
 import * as path from "path";
 
 export enum LanguageClientState {
@@ -62,21 +70,19 @@ class ErrorHandlingClient extends vlc.LanguageClient {
 }
 
 export abstract class ChapelLanguageClient {
-  chplhome: string;
   protected config_: ToolConfig;
   name: string;
   state: LanguageClientState;
   tool_path: string;
   client: ErrorHandlingClient | undefined;
   logger: vscode.LogOutputChannel;
+  statusBarItem: vscode.StatusBarItem;
 
   constructor(
-    chplhome: string,
     config: ToolConfig,
     name: string,
     logger: vscode.LogOutputChannel
   ) {
-    this.chplhome = chplhome;
     this.config_ = config;
     this.name = name;
     this.state = this.config_.enable
@@ -85,6 +91,21 @@ export abstract class ChapelLanguageClient {
     this.tool_path = this.getToolPath();
     this.client = undefined;
     this.logger = logger;
+    this.statusBarItem = vscode.window.createStatusBarItem(
+      vscode.StatusBarAlignment.Right,
+      1000
+    );
+    // render the text using vscode codicons
+    this.statusBarItem.text = `$(error) ${this.name}`;
+    this.statusBarItem.tooltip = `${this.name} is stopped. Click to restart.`;
+    this.statusBarItem.color = new vscode.ThemeColor(
+      "statusBarItem.errorForeground"
+    );
+    this.statusBarItem.backgroundColor = new vscode.ThemeColor(
+      "statusBarItem.errorBackground"
+    );
+    this.statusBarItem.command = `${this.name}.restart`;
+    this.statusBarItem.hide();
   }
 
   protected abstract getToolPath(): string;
@@ -92,9 +113,8 @@ export abstract class ChapelLanguageClient {
   get config(): ToolConfig {
     return this.config_;
   }
-  async resetConfig(chplhome: string, config: ToolConfig) {
+  async resetConfig(config: ToolConfig) {
     await this.stop();
-    this.chplhome = chplhome;
     this.config_ = config;
     this.state = this.config_.enable
       ? LanguageClientState.STOPPED
@@ -105,6 +125,7 @@ export abstract class ChapelLanguageClient {
 
   setErrorState() {
     this.state = LanguageClientState.ERRORED;
+    this.statusBarItem.show();
   }
 
   clearError(): void {
@@ -112,21 +133,25 @@ export abstract class ChapelLanguageClient {
   }
 
   private errorFindTools() {
+    this.setErrorState();
     // if invalid chplhome, prompt user to set it
     // if missing tool path, warn user that we can't find it, tell them to not override the path or upgrade their chapel version
     // otherwise, its likely the tools arent built, so prompt the user to build them
 
-    if (checkChplHome(this.chplhome) !== undefined) {
+    if (this.tool_path === "") {
       vscode.window
         .showErrorMessage(
-          "CHPL_HOME is either missing or incorrect, make sure the path is correct",
-          "Find CHPL_HOME",
+          `Could not determine the path for ${this.name}. Make sure it is installed. If it is, you may need to set the path manually.`,
+          `Set ${this.name} Path`,
+          "Set CHPL_HOME",
           "Show Log",
           "Ok"
         )
         .then((value) => {
-          if (value === "Find CHPL_HOME") {
-            vscode.commands.executeCommand("chapel.findChpl");
+          if (value === `Set ${this.name} Path`) {
+            // TODO
+          } else if (value === "Set CHPL_HOME") {
+            vscode.commands.executeCommand("chapel.findChplHome");
           } else if (value === "Show Log") {
             this.logger.show();
           }
@@ -134,7 +159,7 @@ export abstract class ChapelLanguageClient {
     } else if (checkToolPath(this.tool_path) !== undefined) {
       vscode.window
         .showErrorMessage(
-          `${this.name} does not exist in the CHPL_HOME directory, make sure you are using the correct version of Chapel`,
+          `${this.name} is missing at the path '${this.tool_path}'. If you set the path manually, make sure it is correct. If it is, you may need to upgrade your Chapel version.`,
           "Show Log",
           "Ok"
         )
@@ -146,15 +171,12 @@ export abstract class ChapelLanguageClient {
     } else {
       vscode.window
         .showErrorMessage(
-          `${this.name} encountered an error, this is likely because ${this.name} is not installed. Double check that ${this.name} is built.`,
-          "Build Tools",
+          `${this.name} encountered an error. You may need to rebuild ${this.name}.`,
           "Show Log",
           "Ok"
         )
         .then((value) => {
-          if (value === "Build Tools") {
-            vscode.commands.executeCommand(`chapel.buildTools`, this.chplhome);
-          } else if (value === "Show Log") {
+          if (value === "Show Log") {
             this.logger.show();
           }
         });
@@ -168,16 +190,25 @@ export abstract class ChapelLanguageClient {
       return Promise.resolve();
     }
     this.state = LanguageClientState.STARTING;
+    this.statusBarItem.hide();
     let toolPathError = checkToolPath(this.tool_path);
     if (toolPathError !== undefined) {
       this.logger.error(toolPathError);
       this.errorFindTools();
-      this.state = LanguageClientState.STOPPED;
       return Promise.reject();
     }
 
     let env = cloneEnv();
-    env.CHPL_HOME = this.chplhome;
+    const chplhome = getChplHome();
+    if (chplhome !== undefined && chplhome !== "") {
+      this.logger.info(`Using CHPL_HOME: ${chplhome}`);
+      const chplHomeError = checkChplHome(chplhome);
+      if (chplHomeError !== undefined) {
+        showChplHomeMissingError(chplHomeError);
+      } else {
+        env.CHPL_HOME = chplhome;
+      }
+    }
     env.CHPL_DEVELOPER = getChplDeveloper() ? "1" : "0";
 
     let args = this.alwaysArguments();
@@ -190,7 +221,7 @@ export abstract class ChapelLanguageClient {
       command: this.tool_path,
       args: args,
       options: {
-        cwd: this.chplhome,
+        cwd: getWorkspaceFolder()?.uri.fsPath,
         env: env,
       },
     };
@@ -238,7 +269,7 @@ export abstract class ChapelLanguageClient {
       }
 
       this.stop().finally(() => {
-        this.state = LanguageClientState.ERRORED;
+        this.setErrorState();
 
         vscode.window
           .showErrorMessage(
@@ -337,7 +368,12 @@ export abstract class ChapelLanguageClient {
 
 export class ChplCheckClient extends ChapelLanguageClient {
   getToolPath(): string {
-    return path.join(this.chplhome, "tools", "chplcheck", "chplcheck");
+    const path = findToolPath("chplcheck", getChplHome());
+    if (path === undefined) {
+      this.setErrorState();
+      return "";
+    }
+    return path;
   }
   alwaysArguments(): Array<string> {
     return ["--lsp"];
@@ -345,12 +381,12 @@ export class ChplCheckClient extends ChapelLanguageClient {
 }
 export class CLSClient extends ChapelLanguageClient {
   getToolPath(): string {
-    return path.join(
-      this.chplhome,
-      "tools",
-      "chpl-language-server",
-      "chpl-language-server"
-    );
+    const path = findToolPath("chpl-language-server", getChplHome());
+    if (path === undefined) {
+      this.setErrorState();
+      return "";
+    }
+    return path;
   }
   alwaysArguments(): Array<string> {
     let args = [];

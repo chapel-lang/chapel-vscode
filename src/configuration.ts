@@ -22,29 +22,39 @@ import * as vscode from "vscode";
 export interface ToolConfig {
   args: Array<string>;
   enable: boolean;
+  path: string | undefined;
 }
-const ToolConfigDefault: ToolConfig = {args: [], enable: false};
+const ToolConfigDefault: ToolConfig = {
+  args: [],
+  enable: false,
+  path: undefined,
+};
 
 export type ChplCheckConfig = ToolConfig;
-const ChplCheckConfigDefault: ChplCheckConfig = {...ToolConfigDefault };
+const ChplCheckConfigDefault: ChplCheckConfig = { ...ToolConfigDefault };
 
 export interface CLSConfig extends ToolConfig {
   resolver: boolean;
 }
-const CLSConfigDefault: CLSConfig = {...ToolConfigDefault, resolver: false};
+const CLSConfigDefault: CLSConfig = { ...ToolConfigDefault, resolver: false };
 
 const configScope = "chapel";
 
-export function getChplHome(): string {
+export function getChplHome(): string | undefined {
   const config = vscode.workspace.getConfiguration(configScope);
   const chplhome = config.get<string>("CHPL_HOME");
-  return chplhome ?? "";
+  return chplhome ?? undefined;
 }
 export function setChplHome(chplhome: string) {
   const config = vscode.workspace.getConfiguration(configScope);
 
-  // when updating CHPL_HOME, we should update the workspace config if its been overriden, otherwise set it globally for all users
-  if(config.inspect("CHPL_HOME")?.workspaceValue !== undefined) {
+  // an unfortunate aspect of the vscode API is that it doesn't allow us to
+  // distinguish between global local and global remote settings. This means
+  // this code may edit the wrong config file, because it will prefer the
+  // global local settings over the global remote settings. This is a known
+  // issue with the vscode API:
+  // https://github.com/microsoft/vscode/issues/182696
+  if (config.inspect("CHPL_HOME")?.workspaceValue !== undefined) {
     config.update("CHPL_HOME", chplhome, vscode.ConfigurationTarget.Workspace);
   } else {
     config.update("CHPL_HOME", chplhome, vscode.ConfigurationTarget.Global);
@@ -58,7 +68,8 @@ export function getChplDeveloper(): boolean {
 
 export function getChplCheckConfig(): ChplCheckConfig {
   const config = vscode.workspace.getConfiguration(configScope);
-  const chplcheck = config.get<ChplCheckConfig>("chplcheck") ?? ChplCheckConfigDefault;
+  const chplcheck =
+    config.get<ChplCheckConfig>("chplcheck") ?? ChplCheckConfigDefault;
   return chplcheck;
 }
 
