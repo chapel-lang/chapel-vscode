@@ -1,0 +1,39 @@
+name: Upload VSCode packages
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      repository:
+        description: 'Repository'
+        required: true
+        default: 'PYPI'
+        type: choice
+        options:
+        - 'PYPI'
+        - 'TEST_PYPI'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - uses: actions/checkout@v2
+
+    - name: Install Node.js
+      uses: actions/setup-node@v3
+
+    - name: NPM install
+      run: |
+        npm install
+
+    - name: Publish
+      env:
+        VSCE_PAT: ${{ secrets.CHAPEL_VSCODE_VSCE_PAT }}
+        OPENVSX_PAT: ${{ secrets.CHAPEL_VSCODE_OPENVSX_PAT }}
+      run: |
+        npm run deploy
+        npx ovsx publish -p "$OPENVSX_PAT"
+
