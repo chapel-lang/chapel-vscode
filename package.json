@@ -176,7 +176,8 @@
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile && npm run lint",
-    "lint": "eslint src --ext ts"
+    "lint": "eslint src --ext ts",
+    "deploy": "vsce publish"
   },
   "devDependencies": {
     "@types/node": "18.x",
@@ -184,7 +185,9 @@
     "@typescript-eslint/eslint-plugin": "^6.9.0",
     "@typescript-eslint/parser": "^6.9.0",
     "@vscode/test-electron": "^2.3.6",
+    "@vscode/vsce": "^2.29.0",
     "eslint": "^8.52.0",
+    "ovsx": "^0.9.1",
     "typescript": "^5.2.2"
   },
   "dependencies": {
