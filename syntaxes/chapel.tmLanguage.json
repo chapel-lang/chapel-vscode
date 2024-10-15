@@ -167,6 +167,10 @@
     "string_format": {
       "patterns": [
         {
+          "match": "(%\\?)",
+          "name": "constant.other.placeholder.chapel"
+        },
+        {
           "match": "(%[{]([#]+|[#]*[.][#]+)[}])",
           "name": "constant.other.placeholder.chapel"
         },
