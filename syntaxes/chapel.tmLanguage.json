@@ -29,7 +29,7 @@
     "keywords": {
       "patterns": [
         {
-          "match": "\\b(align|as|atomic|begin|break|by|catch|class|cobegin|coforall|deinit|continue|defer|delete|dmapped|do|else|enum|except|export|extern|for|forall|foreach|forwarding|if|import|in|index|init|init=|inline|inout|interface|implements|iter|label|lambda|let|lifetime|local|manage|module|new|noinit|on|only|operator|otherwise|out|override|postinit|__primitive|pragma|private|proc|prototype|public|record|reduce|require|return|scan|select|serial|shared|then|these|throw|throws|try|union|use|when|where|while|with|yield|zip)\\b",
+          "match": "\\b(align|as|atomic|begin|break|by|catch|class|cobegin|coforall|deinit|continue|defer|delete|dmapped|do|else|enum|except|export|extern|for|forall|foreach|forwarding|if|import|in|include|index|init|init=|inline|inout|interface|implements|iter|label|lambda|let|lifetime|local|manage|module|new|noinit|on|only|operator|otherwise|out|override|postinit|__primitive|pragma|private|proc|prototype|public|record|reduce|require|return|scan|select|serial|shared|then|these|throw|throws|try|union|use|when|where|while|with|yield|zip)\\b",
           "name": "keyword.control.chapel"
         },
         {
