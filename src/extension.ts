@@ -26,6 +26,7 @@ import {
 } from "./configuration";
 import { ChplCheckClient, CLSClient } from "./ChapelLanguageClient";
 import { checkChplHome, findPossibleChplHomes } from "./ChplPaths";
+import * as fs from "fs";
 
 let chplcheckClient: ChplCheckClient;
 let clsClient: CLSClient;
@@ -157,6 +158,67 @@ export function activate(context: vscode.ExtensionContext) {
       Promise.all([chplcheckClient.start(), clsClient.start()]);
     })
   );
+
+  // register a terminal link provider to handle links like $CHPL_HOME/...
+  vscode.window.registerTerminalLinkProvider({
+    provideTerminalLinks: (context, _token) => {
+      const line = context.line as string;
+      const startIndex = line.indexOf('$CHPL_HOME');
+      if (startIndex === -1) {
+        return [];
+      }
+      const suffix = '.chpl';
+      const endIndex = line.indexOf(suffix+':', startIndex);
+      if (endIndex === -1) {
+        return [];
+      }
+      var path = line.substring(startIndex, endIndex + suffix.length);
+
+      const lineNumStart = endIndex + suffix.length + 1;
+      const lineNumEnd = line.indexOf(':', lineNumStart);
+      const lineNum = lineNumEnd !== -1 ?
+        parseInt(line.substring(lineNumStart, lineNumEnd)) : -1;
+
+      const length = lineNum !== -1 ?
+        lineNumEnd - startIndex : endIndex + suffix.length + 1 - startIndex;
+
+      // resolve the CHPL_HOME
+      const chplHome = getChplHome();
+      if (chplHome && chplHome !== "") {
+        path = path.replace('$CHPL_HOME', chplHome);
+      }
+
+      const termLink = {startIndex, length, data: {
+        path, lineNum
+      }};
+      return [termLink];
+    },
+    handleTerminalLink: (link: any) => {
+      const path = link.data.path;
+      const lineNum = link.data.lineNum;
+
+      // if the path doesn't exist, offer the user the chance to use the quick open
+      if (!fs.existsSync(path)) {
+        const pathLine = lineNum !== -1 ? `${path}:${lineNum}` : path;
+        vscode.commands.executeCommand('workbench.action.quickOpen', pathLine);
+      } else {
+        // jump directly to the file
+        const uri = vscode.Uri.file(link.data.path);
+
+        vscode.workspace.openTextDocument(uri).then((doc) => {
+          vscode.window.showTextDocument(doc).then((editor) => {
+            if (link.data.lineNum === -1) {
+              return;
+            }
+            // jump to the line
+            const pos = new vscode.Position(link.data.lineNum - 1, 0);
+            var range = new vscode.Range(pos, pos);
+            editor.revealRange(range);
+          });
+        });
+      }
+    }
+  });
 }
 
 export function deactivate() {
