@@ -77,7 +77,7 @@
     "constants": {
       "patterns": [
         {
-          "match": "\\b(true|false|nil)\\b",
+          "match": "\\b(true|false|nil|none)\\b",
           "name": "constant.language.chapel"
         },
         { "include": "#integers" },
