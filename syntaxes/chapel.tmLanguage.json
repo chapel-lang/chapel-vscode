@@ -187,6 +187,36 @@
     "strings": {
       "patterns": [
         {
+          "begin": "\"\"\"",
+          "beginCaptures": {
+            "0": { "name": "punctuation.definition.string.begin.chapel" }
+          },
+          "end": "\"\"\"",
+          "endCaptures": {
+            "0": { "name": "punctuation.definition.string.end.chapel" }
+          },
+          "name": "string.quoted.double.multi.chapel",
+          "patterns": [
+            { "include": "#string_escapes" },
+            { "include": "#string_format" }
+          ]
+        },
+        {
+          "begin": "'''",
+          "beginCaptures": {
+            "0": { "name": "punctuation.definition.string.begin.chapel" }
+          },
+          "end": "'''",
+          "endCaptures": {
+            "0": { "name": "punctuation.definition.string.end.chapel" }
+          },
+          "name": "string.quoted.single.multi.chapel",
+          "patterns": [
+            { "include": "#string_escapes" },
+            { "include": "#string_format" }
+          ]
+        },
+        {
           "begin": "\"",
           "beginCaptures": {
             "0": { "name": "punctuation.definition.string.begin.chapel" }
