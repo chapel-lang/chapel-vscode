@@ -42,7 +42,6 @@ export function checkChplHome(
   const subdirs = [
     "util",
     "compiler",
-    "frontend",
     "runtime",
     "modules",
     "tools",
