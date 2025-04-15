@@ -185,7 +185,8 @@
     "@typescript-eslint/parser": "^6.9.0",
     "@vscode/test-electron": "^2.3.6",
     "eslint": "^8.52.0",
-    "typescript": "^5.2.2"
+    "typescript": "^5.2.2",
+    "@vscode/vsce": "^3.3.2"
   },
   "dependencies": {
     "vscode-languageclient": "^8.0.2"
