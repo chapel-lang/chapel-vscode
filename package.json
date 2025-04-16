@@ -19,7 +19,6 @@
   "keywords": [
     "chapel"
   ],
-  "activationEvents": [],
   "main": "./out/extension.js",
   "icon": "./icons/chapel.png",
   "license": "SEE LICENSE IN LICENSE",
@@ -95,6 +94,11 @@
         "command": "chpl-language-server.restart",
         "title": "Restart chpl-language-server",
         "category": "chapel"
+      },
+      {
+        "command": "chapel.generateGenericDebug",
+        "title": "Generate a launch.json for a Chapel program",
+        "category": "chapel"
       }
     ],
     "activationEvents": [
@@ -161,6 +165,15 @@
               "type": "string"
             },
             "description": "Extra arguments to pass to chpl-language-server"
+          },
+          "chapel.preferredDebugProvider": {
+            "scope": "window",
+            "type": "string",
+            "description": "The preferred debug provider to use",
+            "enum": [
+              "vadimcn.vscode-lldb"
+            ],
+            "default": "vadimcn.vscode-lldb"
           }
         }
       }
