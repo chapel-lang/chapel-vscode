@@ -78,3 +78,9 @@ export function getCLSConfig(): CLSConfig {
   const cls = config.get<CLSConfig>("chpl-language-server") ?? CLSConfigDefault;
   return cls;
 }
+
+export function getPreferredDebugProvider(): string | undefined {
+  const config = vscode.workspace.getConfiguration(configScope);
+  const provider = config.get<string>("preferredDebugProvider");
+  return provider ?? undefined;
+}
