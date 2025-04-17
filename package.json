@@ -96,8 +96,13 @@
         "category": "chapel"
       },
       {
-        "command": "chapel.generateGenericDebug",
-        "title": "Generate a launch.json for a Chapel program",
+        "command": "chapel.createDebugConfig",
+        "title": "Create a debug launch.json for Chapel",
+        "category": "chapel"
+      },
+      {
+        "command": "chapel.createDebugConfigForActiveFile",
+        "title": "Create a debug launch.json for the active Chapel file",
         "category": "chapel"
       }
     ],
