@@ -41,9 +41,6 @@ async function chapel_createDebugConfig() {
     return
   }
   // TODO: we could do some kind of detection for mason projects, maybe even Make/CMake?
-  // TODO: for the executables, we could search for all executable files?
-  // TODO create a custom webview to let the user select the executable and env vars and args
-  // for now, prompt the user for a name and a path the executable
 
   const name = await vscode.window.showInputBox({ placeHolder: "Enter the name of the debug configuration" });
   if (!name) {
@@ -53,8 +50,9 @@ async function chapel_createDebugConfig() {
   if (!executable) {
     return;
   }
+  const { argsArray, envMap } = await getArgsAndEnv();
 
-  const newConfig = provider.createDebugConfig(name, executable);
+  const newConfig = provider.createDebugConfig(name, executable, argsArray, envMap);
   await saveConfig(newConfig);
 }
 
@@ -92,7 +90,9 @@ async function chapel_createDebugConfigForActiveFile() {
     executableRelPath = "${workspaceFolder}/" + executableNiceName;
   }
 
-  const newConfig = provider.createDebugConfig(`Debug ${executableNiceName}`, executableRelPath);
+  const { argsArray, envMap } = await getArgsAndEnv();
+
+  const newConfig = provider.createDebugConfig(`Debug ${executableNiceName}`, executableRelPath, argsArray, envMap);
   await saveConfig(newConfig);
 }
 
@@ -131,6 +131,28 @@ async function saveConfig(newConfig: vscode.DebugConfiguration) {
   }, (err) => {
     vscode.window.showErrorMessage(`Failed to create debug configuration: ${err}`);
   });
+}
+
+async function getArgsAndEnv() {
+
+  // TODO: do some kind of shlex.split() on a comma, right now this will split
+  // on commas inside of quotes
+
+  const args = await vscode.window.showInputBox({ placeHolder: "Enter the arguments to pass to the executable (comma separated)" });
+  const argsArray = args ? args.split(",").map((arg: string) => arg.trim()) : [];
+
+  const env = await vscode.window.showInputBox({ placeHolder: "Enter the environment variables to set (key=value, comma separated)" });
+  const envMap = new Map<string, string>();
+  if (env) {
+    const envArray = env.split(",").map((envVar: string) => envVar.trim());
+    for (const envVar of envArray) {
+      const [key, value] = envVar.split("=");
+      if (key && value) {
+        envMap.set(key.trim(), value.trim());
+      }
+    }
+  }
+  return { argsArray, envMap };
 }
 
 class DebugProvider {
@@ -186,9 +208,3 @@ function getPreferredProvider(): DebugProvider | undefined {
   }
   return undefined;
 }
-
-
-// TODO: this is a placeholder for the webview panel
-// class LaunchConfigCreationPanel {
-// https://github.com/microsoft/vscode-extension-samples/blob/main/webview-sample/src/extension.ts
-// }
