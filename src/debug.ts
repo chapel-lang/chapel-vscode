@@ -20,6 +20,7 @@
 
 import * as vscode from 'vscode';
 import { getPreferredDebugProvider } from './configuration';
+import { getEnvAffectingChapel } from './ChplPaths';
 
 export function registerDebugCommands(context: vscode.ExtensionContext) {
   context.subscriptions.push(
@@ -152,6 +153,15 @@ async function getArgsAndEnv() {
       }
     }
   }
+
+  const baseEnv = getEnvAffectingChapel();
+  // merge the base env with the user provided env, prefer user provided env
+  for (const [key, value] of baseEnv) {
+    if (!envMap.has(key)) {
+      envMap.set(key, value);
+    }
+  }
+
   return { argsArray, envMap };
 }
 
