@@ -177,9 +177,10 @@
             "type": "string",
             "description": "The preferred debug provider to use",
             "enum": [
-              "vadimcn.vscode-lldb"
+              "vadimcn.vscode-lldb",
+              "cppdbg"
             ],
-            "default": "vadimcn.vscode-lldb"
+            "default": "cppdbg"
           }
         }
       }
