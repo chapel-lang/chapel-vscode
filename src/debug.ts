@@ -203,16 +203,22 @@ class DebugProviderCodeLLDB implements DebugProvider {
     };
   }
 }
-class BuiltinDebugProvider implements DebugProvider {
+class CXXDebugProvider implements DebugProvider {
   name: string;
   id: string;
   type: string;
   constructor() {
-    this.name = "Builtin Debugger";
-    this.id = "cppdbg";
+    this.name = "C/C++ Debugger";
+    this.id = "ms-vscode.cpptools";
     this.type = "cppdbg";
   }
-  isAvailable(): boolean { return true; }
+  getInstallCommand(): string {
+    return `extension.open?${encodeURIComponent(`"${this.id}"`)}`;
+  }
+  isAvailable(): boolean {
+    const extension = vscode.extensions.getExtension(this.id);
+    return extension !== undefined;
+  }
   createDebugConfig(name: string, executable: string, args: string[] = [], env: Map<string, string> = new Map()): vscode.DebugConfiguration {
     return {
       name: name,
@@ -235,7 +241,7 @@ class BuiltinDebugProvider implements DebugProvider {
 
 const debugProviders: Map<string, DebugProvider> = new Map([
   ["vadimcn.vscode-lldb", new DebugProviderCodeLLDB()],
-  ["cppdbg", new BuiltinDebugProvider()],
+  ["ms-vscode.cpptools", new CXXDebugProvider()],
 ])
 
 
