@@ -227,7 +227,7 @@ export function getEnvAffectingChapel(): Map<string, string> {
 
   // special handling for CHPL_HOME and CHPL_DEVELOPER
   const chplhome = cfg.getChplHome();
-  if (chplhome != undefined || chplhome !== "") {
+  if (chplhome != undefined && chplhome !== "") {
     env.set("CHPL_HOME", chplhome);
   } else if (process.env["CHPL_HOME"] !== undefined) {
     env.set("CHPL_HOME", process.env["CHPL_HOME"]);
