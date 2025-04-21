@@ -19,7 +19,6 @@
   "keywords": [
     "chapel"
   ],
-  "activationEvents": [],
   "main": "./out/extension.js",
   "icon": "./icons/chapel.png",
   "license": "SEE LICENSE IN LICENSE",
@@ -95,6 +94,16 @@
         "command": "chpl-language-server.restart",
         "title": "Restart chpl-language-server",
         "category": "chapel"
+      },
+      {
+        "command": "chapel.createDebugConfig",
+        "title": "Create a debug launch.json for Chapel",
+        "category": "chapel"
+      },
+      {
+        "command": "chapel.createDebugConfigForActiveFile",
+        "title": "Create a debug launch.json for the active Chapel file",
+        "category": "chapel"
       }
     ],
     "activationEvents": [
@@ -161,6 +170,15 @@
               "type": "string"
             },
             "description": "Extra arguments to pass to chpl-language-server"
+          },
+          "chapel.preferredDebugProvider": {
+            "scope": "window",
+            "type": "string",
+            "description": "The preferred debug provider to use",
+            "enum": [
+              "vadimcn.vscode-lldb"
+            ],
+            "default": "vadimcn.vscode-lldb"
           }
         }
       }
@@ -184,9 +202,9 @@
     "@typescript-eslint/eslint-plugin": "^6.9.0",
     "@typescript-eslint/parser": "^6.9.0",
     "@vscode/test-electron": "^2.3.6",
+    "@vscode/vsce": "^3.3.2",
     "eslint": "^8.52.0",
-    "typescript": "^5.2.2",
-    "@vscode/vsce": "^3.3.2"
+    "typescript": "^5.2.2"
   },
   "dependencies": {
     "vscode-languageclient": "^8.0.2"

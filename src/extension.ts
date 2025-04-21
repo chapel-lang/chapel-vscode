@@ -26,6 +26,7 @@ import {
 } from "./configuration";
 import { ChplCheckClient, CLSClient } from "./ChapelLanguageClient";
 import { checkChplHome, findPossibleChplHomes } from "./ChplPaths";
+import { registerDebugCommands } from "./debug";
 import * as fs from "fs";
 
 let chplcheckClient: ChplCheckClient;
@@ -117,6 +118,8 @@ export function activate(context: vscode.ExtensionContext) {
       }
     })
   );
+
+  registerDebugCommands(context);
 
   chplcheckClient = new ChplCheckClient(
     getChplCheckConfig(),

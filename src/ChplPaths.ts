@@ -195,3 +195,54 @@ export function getWorkspaceFolder(): vscode.WorkspaceFolder | undefined {
   const doc = editor.document;
   return vscode.workspace.getWorkspaceFolder(doc.uri);
 }
+
+/*
+  Gets all of the environment variables that could possibly affect Chapel
+  execution. This can be used to prepopulated configuration files for users or\to forward on the custom sub-processes.
+*/
+export function getEnvAffectingChapel(): Map<string, string> {
+  const globs = [
+    "CHPL_.*",
+    "CHPL_RT_.*",
+    "FI_.*",
+    "GASNET_.*",
+    "SLURM_.*",
+    "PBS_.*",
+    "QTHREAD_.*",
+    "QT_.*",
+    "ASAN_OPTIONS",
+  ];
+  // TODO: consider including?
+  // PKG_CONFIG_PATH
+  // HUGETLB_NO_RESERVE
+  // MASON_REGISTRY
+  // SPACK_ROOT
+  // PYTHON*
+  // LD_LIBRARY_PATH
+  // DYLD_LIBRARY_PATH
+  const regex = new RegExp(`^(${globs.join('|')})$`)
+
+  let env = new Map();
+  for (const e in process.env) {
+    if (regex.test(e)) {
+      env.set(e, process.env[e] ?? "");
+    }
+  }
+
+  // special handling for CHPL_HOME and CHPL_DEVELOPER
+  const chplhome = cfg.getChplHome();
+  if (chplhome != undefined && chplhome !== "") {
+    env.set("CHPL_HOME", chplhome);
+  } else if (process.env["CHPL_HOME"] !== undefined) {
+    env.set("CHPL_HOME", process.env["CHPL_HOME"]);
+  }
+  const chpldev = cfg.getChplDeveloper();
+  if (chpldev !== undefined && chpldev) {
+    env.set("CHPL_DEVELOPER", "1");
+  } else if (process.env["CHPL_DEVELOPER"] !== undefined) {
+    env.set("CHPL_DEVELOPER", process.env["CHPL_DEVELOPER"]);
+  }
+
+  return env;
+
+}
