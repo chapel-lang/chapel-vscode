@@ -108,8 +108,7 @@ function getProvider(): DebugProvider | undefined {
   }
 
   if (!provider.isAvailable()) {
-    const getInstallCommand = provider.getInstallCommand as () => string;
-    vscode.window.showErrorMessage(`The requested debug provider '${provider.id}' is not installed. Please install [${provider.name}](command:${getInstallCommand()}) or select another provider.`);
+    vscode.window.showErrorMessage(`The requested debug provider '${provider.id}' is not installed. Please install [${provider.name}](command:${provider.getInstallCommand!()}) or select another provider.`);
     return;
   }
   return provider;
