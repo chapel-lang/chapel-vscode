@@ -178,9 +178,12 @@
             "description": "The preferred debug provider to use",
             "enum": [
               "vadimcn.vscode-lldb",
-              "cppdbg"
+              "ms-vscode.cpptools"
             ],
-            "default": "cppdbg"
+            "default": "ms-vscode.cpptools"
+          }
+
+
           }
         }
       }
