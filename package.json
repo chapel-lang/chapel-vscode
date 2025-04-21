@@ -108,7 +108,8 @@
     ],
     "activationEvents": [
       "onLanguage:chapel",
-      "onLanguage:chapel-ast"
+      "onLanguage:chapel-ast",
+      "workspaceContains:**/*.chpl"
     ],
     "configuration": [
       {
