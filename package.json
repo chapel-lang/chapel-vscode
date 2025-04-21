@@ -100,7 +100,7 @@
     "activationEvents": [
       "onLanguage:chapel",
       "onLanguage:chapel-ast",
-      "workspaceContains:*.chpl"
+      "workspaceContains:**/*.chpl"
     ],
     "configuration": [
       {
