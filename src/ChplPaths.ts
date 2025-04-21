@@ -196,6 +196,10 @@ export function getWorkspaceFolder(): vscode.WorkspaceFolder | undefined {
   return vscode.workspace.getWorkspaceFolder(doc.uri);
 }
 
+/*
+  Gets all of the environment variables that could possibly affect Chapel
+  execution. This can be used to prepopulated configuration files for users or\to forward on the custom sub-processes.
+*/
 export function getEnvAffectingChapel(): Map<string, string> {
   const globs = [
     "CHPL_.*",
