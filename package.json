@@ -29,6 +29,11 @@
     "type": "git",
     "url": "https://github.com/chapel-lang/chapel-vscode.git"
   },
+  "activationEvents": [
+    "onLanguage:chapel",
+    "onLanguage:chapel-ast",
+    "workspaceContains:**/*.chpl"
+  ],
   "contributes": {
     "languages": [
       {
@@ -105,11 +110,6 @@
         "title": "Create a debug launch.json for the active Chapel file",
         "category": "chapel"
       }
-    ],
-    "activationEvents": [
-      "onLanguage:chapel",
-      "onLanguage:chapel-ast",
-      "workspaceContains:**/*.chpl"
     ],
     "configuration": [
       {
