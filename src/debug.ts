@@ -108,7 +108,7 @@ function getProvider(): DebugProvider | undefined {
   }
 
   if (!provider.isAvailable()) {
-    vscode.window.showErrorMessage(`The requested debug provider '${provider.id}' is not installed. Please install [${provider.name}](command:${provider.getInstallCommand()}) or select another provider.`);
+    vscode.window.showErrorMessage(`The requested debug provider '${provider.id}' is not installed. Please install [${provider.name}](command:${provider.getInstallCommand!()}) or select another provider.`);
     return;
   }
   return provider;
@@ -165,14 +165,23 @@ async function getArgsAndEnv() {
   return { argsArray, envMap };
 }
 
-class DebugProvider {
+interface DebugProvider {
   name: string;
   id: string;
   type: string;
-  constructor(name: string, id: string, type: string) {
-    this.name = name;
-    this.id = id;
-    this.type = type;
+  getInstallCommand?(): string;
+  isAvailable(): boolean;
+  createDebugConfig(name: string, executable: string, args?: string[], env?: Map<string, string>): vscode.DebugConfiguration;
+}
+
+class DebugProviderCodeLLDB implements DebugProvider {
+  name: string;
+  id: string;
+  type: string;
+  constructor() {
+    this.name = "CodeLLDB";
+    this.id = "vadimcn.vscode-lldb";
+    this.type = "lldb";
   }
   getInstallCommand(): string {
     return `extension.open?${encodeURIComponent(`"${this.id}"`)}`;
@@ -194,9 +203,45 @@ class DebugProvider {
     };
   }
 }
+class CXXDebugProvider implements DebugProvider {
+  name: string;
+  id: string;
+  type: string;
+  constructor() {
+    this.name = "C/C++ Debugger";
+    this.id = "ms-vscode.cpptools";
+    this.type = "cppdbg";
+  }
+  getInstallCommand(): string {
+    return `extension.open?${encodeURIComponent(`"${this.id}"`)}`;
+  }
+  isAvailable(): boolean {
+    const extension = vscode.extensions.getExtension(this.id);
+    return extension !== undefined;
+  }
+  createDebugConfig(name: string, executable: string, args: string[] = [], env: Map<string, string> = new Map()): vscode.DebugConfiguration {
+    return {
+      name: name,
+      type: this.type,
+      request: "launch",
+      program: executable,
+      cwd: "${workspaceFolder}",
+      args: args,
+      environment: [...Array.from(env.entries()).map(([key, value]) => ({ name: key, value: value }))],
+      stopAtEntry: false,
+      linux: {
+        MIMode: "gdb",
+      },
+      osx: {
+        MIMode: "lldb",
+      },
+    };
+  }
+}
 
 const debugProviders: Map<string, DebugProvider> = new Map([
-  ["vadimcn.vscode-lldb", new DebugProvider("CodeLLDB", "vadimcn.vscode-lldb", "lldb")],
+  ["vadimcn.vscode-lldb", new DebugProviderCodeLLDB()],
+  ["ms-vscode.cpptools", new CXXDebugProvider()],
 ])
 
 
