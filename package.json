@@ -198,17 +198,17 @@
     "problemMatchers": [
       {
         "name": "chpl-compiler",
-        "owner": "chpl-compiler",
-        "fileLocation": [
-          "relative",
-          "${workspaceFolder}"
-        ],
+        "owner": "chpl",
+        "source": "chpl",
+        "fileLocation": "absolute",
         "pattern": [
           {
-            "regexp": "^(.+):([0-9]+): error: (.+)$",
+            "regexp": "^(.+):([0-9]+): (error|warning): (.+)$",
             "file": 1,
             "line": 2,
-            "message": 3
+            "column": 0,
+            "severity": 3,
+            "message": 4
           }
         ]
       }
