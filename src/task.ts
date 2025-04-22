@@ -64,6 +64,8 @@ interface ChplRunTaskDefinition extends vscode.TaskDefinition {
 }
 
 const ChplBuildType = 'chpl';
+// TODO: do we really need a special chpl-run? Why not just a normal 'process' task?
+// the only advantage this adds right now is the rootFile and numLocales properties
 const ChplRunType = 'chpl-run';
 const ChplProblemMatcher = '$chpl-compiler';
 
