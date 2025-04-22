@@ -74,7 +74,7 @@ function getBuildTaskFromDefinition(definition: ChplBuildTaskDefinition, oldTask
 
   const chplCompiler = definition.compiler || getDefaultChplCompiler();
   const args = definition.args || [];
-  const cwd = definition.cwd || vscode.workspace.workspaceFolders?.[0]?.uri.fsPath || process.cwd();
+  const cwd = definition.cwd || getWorkspaceFolder() || process.cwd();
 
   const env = getEnv(definition);
 
@@ -107,7 +107,7 @@ function getRunTaskFromDefinition(definition: ChplRunTaskDefinition, oldTask?: v
   const executable = definition.executable;
   const numLocales = definition.numLocales || "1";
   const args = definition.args || [];
-  const cwd = definition.cwd || vscode.workspace.workspaceFolders?.[0]?.uri.fsPath || process.cwd();
+  const cwd = definition.cwd || getWorkspaceFolder() || process.cwd();
   const env = getEnv(definition);
 
   const execution = new vscode.ProcessExecution(
@@ -118,7 +118,8 @@ function getRunTaskFromDefinition(definition: ChplRunTaskDefinition, oldTask?: v
       env: Object.fromEntries(env)
     }
   );
-  const name = oldTask?.name || `Run ${executable}`;
+  const executableBaseName = path.basename(executable);
+  const name = oldTask?.name || `Run ${executableBaseName}`;
 
   const task = new vscode.Task(
     definition,
@@ -131,19 +132,18 @@ function getRunTaskFromDefinition(definition: ChplRunTaskDefinition, oldTask?: v
   return task;
 }
 
-async function getPerFileTasks(taskCreator: (filePath: string, fileName: string, outFile: string, cwd: string) => vscode.Task): Promise<vscode.Task[]> {
+async function getPerFileTasks(taskCreator: (filePath: string, outFile: string, cwd: string) => vscode.Task): Promise<vscode.Task[]> {
   return vscode.workspace.findFiles('**/*.chpl').then((fileUris) => {
     const tasks: vscode.Task[] = [];
-    const wsPath = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+    const wsPath = getWorkspaceFolder();
 
     // Create a task for each Chapel file
     for (const fileUri of fileUris) {
-      const filePath = fileUri.fsPath;
-      const fileName = path.basename(filePath);
-      const outFile = fileName.replace(/\.chpl$/, '');
-      const cwd = replaceAbsPath(wsPath, path.dirname(filePath));
+      const filePath = path.resolve(fileUri.fsPath);
+      const outFile = filePath.replace(/\.chpl$/, '');
+      const cwd = path.dirname(filePath);
 
-      const task = taskCreator(filePath, fileName, outFile, cwd);
+      const task = taskCreator(replaceWithWorkspaceFolder(wsPath, filePath), replaceWithWorkspaceFolder(wsPath, outFile), replaceWithWorkspaceFolder(wsPath, cwd));
       tasks.push(task);
     }
     return tasks;
@@ -155,7 +155,7 @@ class ChplBuildTaskProvider implements vscode.TaskProvider {
 
   public provideTasks(): Thenable<vscode.Task[]> | undefined {
     if (!this.providePromise) {
-      const createBuildTask = (filePath: string, _fileName: string, outFile: string, cwd: string) => {
+      const createBuildTask = (filePath: string, outFile: string, cwd: string) => {
         const buildTask = getBuildTaskFromDefinition({
           type: ChplBuildType,
           rootFile: filePath,
@@ -185,12 +185,15 @@ class ChplRunTaskProvider implements vscode.TaskProvider {
 
   public provideTasks(): Thenable<vscode.Task[]> | undefined {
     if (!this.providePromise) {
-      const createRunTask = (_filePath: string, _fileName: string, outFile: string, cwd: string) => {
+      const createRunTask = (filePath: string, outFile: string, cwd: string) => {
         const runTask = getRunTaskFromDefinition({
           type: ChplRunType,
+          rootFile: filePath,
           executable: outFile,
           numLocales: "1",
-          cwd: cwd
+          cwd: cwd,
+          args: [],
+          env: Object.fromEntries(getEnv())
         });
         return runTask;
       };
@@ -222,8 +225,8 @@ async function chpl_runFileTask() {
     vscode.window.showErrorMessage('The current file is not a Chapel file.');
     return;
   }
-  const filePath = document.fileName;
-
+  const wsPath = getWorkspaceFolder();
+  const filePath = path.resolve(document.fileName);
   const tasks =
     (await Promise.all([vscode.tasks.fetchTasks({
       type: ChplBuildType,
@@ -232,7 +235,9 @@ async function chpl_runFileTask() {
     })])).flat()
       .filter(task => {
         const definition = task.definition as ChplBuildTaskDefinition | ChplRunTaskDefinition;
-        return definition.rootFile === filePath;
+
+        const rootFile = path.resolve(resolveWorkspaceFolder(wsPath, definition.rootFile || ''));
+        return rootFile === filePath;
       });
 
   if (tasks.length === 0) {
@@ -282,9 +287,23 @@ function getEnv(def: ChplBuildTaskDefinition | ChplRunTaskDefinition | undefined
   return envMap;
 }
 
-function replaceAbsPath(wsPath: string | undefined, filePath: string): string {
-  if (wsPath && filePath.startsWith(`${wsPath}/`)) {
-    return filePath.replace(wsPath, "${workspaceFolder}/");
+function replaceWithWorkspaceFolder(wsPath: string | undefined, filePath: string): string {
+  if (wsPath) {
+    if (filePath.startsWith(`${wsPath}/`)) {
+      return filePath.replace(wsPath, "${workspaceFolder}");
+    } else if (filePath === wsPath) {
+      return "${workspaceFolder}";
+    }
   }
   return filePath;
+}
+function resolveWorkspaceFolder(wsPath: string | undefined, filePath: string): string {
+  if (wsPath && filePath.includes("${workspaceFolder}")) {
+    return filePath.replace("${workspaceFolder}", wsPath);
+  }
+  return filePath;
+}
+
+function getWorkspaceFolder(): string | undefined {
+  return vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
 }
