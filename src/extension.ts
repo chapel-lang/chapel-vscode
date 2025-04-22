@@ -28,10 +28,11 @@ import { ChplCheckClient, CLSClient } from "./ChapelLanguageClient";
 import { checkChplHome, findPossibleChplHomes } from "./ChplPaths";
 import { registerDebugCommands } from "./debug";
 import * as fs from "fs";
+import { registerChapelTaskProvider } from "./task";
 
 let chplcheckClient: ChplCheckClient;
 let clsClient: CLSClient;
-let logger: vscode.LogOutputChannel;
+export let logger: vscode.LogOutputChannel;
 
 export function showInvalidPathWarning(
   tool: string,
@@ -120,6 +121,7 @@ export function activate(context: vscode.ExtensionContext) {
   );
 
   registerDebugCommands(context);
+  registerChapelTaskProvider(context);
 
   chplcheckClient = new ChplCheckClient(
     getChplCheckConfig(),

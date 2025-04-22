@@ -84,3 +84,9 @@ export function getPreferredDebugProvider(): string | undefined {
   const provider = config.get<string>("preferredDebugProvider");
   return provider ?? undefined;
 }
+
+export function getDefaultCompiler(): string | undefined {
+  const config = vscode.workspace.getConfiguration(configScope);
+  const compiler = config.get<string>("defaultCompiler");
+  return compiler ?? undefined;
+}

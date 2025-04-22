@@ -23,6 +23,7 @@ import * as vscode from "vscode";
 import * as cfg from "./configuration";
 import { showInvalidPathWarning } from "./extension";
 import assert from "assert";
+import { CHPL_WRAPPER } from "./constants";
 
 export function checkChplHome(
   chplhome: string | undefined
@@ -200,8 +201,8 @@ export function getWorkspaceFolder(): vscode.WorkspaceFolder | undefined {
   Gets all of the environment variables that could possibly affect Chapel
   execution. This can be used to prepopulated configuration files for users or\to forward on the custom sub-processes.
 */
-export function getEnvAffectingChapel(): Map<string, string> {
-  const globs = [
+export function getEnvAffectingChapel(extra_globs?: string[]): Map<string, string> {
+  const base_globs = [
     "CHPL_.*",
     "CHPL_RT_.*",
     "FI_.*",
@@ -220,6 +221,7 @@ export function getEnvAffectingChapel(): Map<string, string> {
   // PYTHON*
   // LD_LIBRARY_PATH
   // DYLD_LIBRARY_PATH
+  const globs = base_globs.concat(extra_globs ?? []);
   const regex = new RegExp(`^(${globs.join('|')})$`)
 
   let env = new Map();
@@ -245,4 +247,13 @@ export function getEnvAffectingChapel(): Map<string, string> {
 
   return env;
 
+}
+
+export function getDefaultChplCompiler(): string {
+  const compiler = cfg.getDefaultCompiler();
+  if (compiler !== undefined && compiler !== "") {
+    return compiler;
+  } else {
+    return CHPL_WRAPPER;
+  }
 }
