@@ -18,9 +18,9 @@
  */
 
 
-import * as vscode from 'vscode';
-import { getPreferredDebugProvider } from './configuration';
-import { getEnvAffectingChapel } from './ChplPaths';
+import * as vscode from "vscode";
+import { getPreferredDebugProvider } from "./configuration";
+import { getEnvAffectingChapel } from "./ChplPaths";
 
 export function registerDebugCommands(context: vscode.ExtensionContext) {
   context.subscriptions.push(
@@ -39,7 +39,7 @@ export function registerDebugCommands(context: vscode.ExtensionContext) {
 async function chapel_createDebugConfig() {
   const provider = getProvider();
   if (!provider) {
-    return
+    return;
   }
   // TODO: we could do some kind of detection for mason projects, maybe even Make/CMake?
 
@@ -60,7 +60,7 @@ async function chapel_createDebugConfig() {
 async function chapel_createDebugConfigForActiveFile() {
   const provider = getProvider();
   if (!provider) {
-    return
+    return;
   }
 
   // get the current file
@@ -242,7 +242,7 @@ class CXXDebugProvider implements DebugProvider {
 const debugProviders: Map<string, DebugProvider> = new Map([
   ["vadimcn.vscode-lldb", new DebugProviderCodeLLDB()],
   ["ms-vscode.cpptools", new CXXDebugProvider()],
-])
+]);
 
 
 // currently unused

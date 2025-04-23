@@ -263,7 +263,7 @@ export abstract class ChapelLanguageClient {
 
       if (data && "code" in data) {
         const code = data.code;
-        if (code == -32097) {
+        if (code === -32097) {
           this.errorFindTools();
         }
       }

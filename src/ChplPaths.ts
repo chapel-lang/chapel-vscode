@@ -184,7 +184,9 @@ export function cloneEnv() {
     [k: string]: T;
   }
   let env: Dict<string> = {};
-  for (const e in process.env) env[e] = process.env[e] ?? "";
+  for (const e in process.env) {
+    env[e] = process.env[e] ?? "";
+  }
   return env;
 }
 
@@ -222,7 +224,7 @@ export function getEnvAffectingChapel(extra_globs?: string[]): Map<string, strin
   // LD_LIBRARY_PATH
   // DYLD_LIBRARY_PATH
   const globs = base_globs.concat(extra_globs ?? []);
-  const regex = new RegExp(`^(${globs.join('|')})$`)
+  const regex = new RegExp(`^(${globs.join("|")})$`);
 
   let env = new Map();
   for (const e in process.env) {
@@ -233,7 +235,7 @@ export function getEnvAffectingChapel(extra_globs?: string[]): Map<string, strin
 
   // special handling for CHPL_HOME and CHPL_DEVELOPER
   const chplhome = cfg.getChplHome();
-  if (chplhome != undefined && chplhome !== "") {
+  if (chplhome !== undefined && chplhome !== "") {
     env.set("CHPL_HOME", chplhome);
   } else if (process.env["CHPL_HOME"] !== undefined) {
     env.set("CHPL_HOME", process.env["CHPL_HOME"]);

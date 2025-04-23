@@ -168,19 +168,19 @@ export function activate(context: vscode.ExtensionContext) {
   vscode.window.registerTerminalLinkProvider({
     provideTerminalLinks: (context, _token) => {
       const line = context.line as string;
-      const startIndex = line.indexOf('$CHPL_HOME');
+      const startIndex = line.indexOf("$CHPL_HOME");
       if (startIndex === -1) {
         return [];
       }
-      const suffix = '.chpl';
-      const endIndex = line.indexOf(suffix+':', startIndex);
+      const suffix = ".chpl";
+      const endIndex = line.indexOf(suffix+":", startIndex);
       if (endIndex === -1) {
         return [];
       }
       var path = line.substring(startIndex, endIndex + suffix.length);
 
       const lineNumStart = endIndex + suffix.length + 1;
-      const lineNumEnd = line.indexOf(':', lineNumStart);
+      const lineNumEnd = line.indexOf(":", lineNumStart);
       const lineNum = lineNumEnd !== -1 ?
         parseInt(line.substring(lineNumStart, lineNumEnd)) : -1;
 
@@ -190,7 +190,7 @@ export function activate(context: vscode.ExtensionContext) {
       // resolve the CHPL_HOME
       const chplHome = getChplHome();
       if (chplHome && chplHome !== "") {
-        path = path.replace('$CHPL_HOME', chplHome);
+        path = path.replace("$CHPL_HOME", chplHome);
       }
 
       const termLink = {startIndex, length, data: {
@@ -205,7 +205,7 @@ export function activate(context: vscode.ExtensionContext) {
       // if the path doesn't exist, offer the user the chance to use the quick open
       if (!fs.existsSync(path)) {
         const pathLine = lineNum !== -1 ? `${path}:${lineNum}` : path;
-        vscode.commands.executeCommand('workbench.action.quickOpen', pathLine);
+        vscode.commands.executeCommand("workbench.action.quickOpen", pathLine);
       } else {
         // jump directly to the file
         const uri = vscode.Uri.file(link.data.path);

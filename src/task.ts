@@ -18,10 +18,10 @@
  *
  */
 
-import * as vscode from 'vscode';
-import * as path from 'path';
-import { getDefaultChplCompiler, getEnvAffectingChapel } from './ChplPaths';
-import { logger } from './extension';
+import * as vscode from "vscode";
+import * as path from "path";
+import { getDefaultChplCompiler, getEnvAffectingChapel } from "./ChplPaths";
+import { logger } from "./extension";
 
 
 
@@ -63,11 +63,11 @@ interface ChplRunTaskDefinition extends vscode.TaskDefinition {
   cwd?: string;
 }
 
-const ChplBuildType = 'chpl';
+const ChplBuildType = "chpl";
 // TODO: do we really need a special chpl-run? Why not just a normal 'process' task?
 // the only advantage this adds right now is the rootFile and numLocales properties
-const ChplRunType = 'chpl-run';
-const ChplProblemMatcher = '$chpl-compiler';
+const ChplRunType = "chpl-run";
+const ChplProblemMatcher = "$chpl-compiler";
 
 
 function getBuildTaskFromDefinition(definition: ChplBuildTaskDefinition, oldTask?: vscode.Task): vscode.Task {
@@ -133,21 +133,21 @@ function getRunTaskFromDefinition(definition: ChplRunTaskDefinition, oldTask?: v
 }
 
 async function getPerFileTasks(taskCreator: (filePath: string, outFile: string, cwd: string) => vscode.Task): Promise<vscode.Task[]> {
-  return vscode.workspace.findFiles('**/*.chpl').then((fileUris) => {
+  return vscode.workspace.findFiles("**/*.chpl").then((fileUris) => {
     const tasks: vscode.Task[] = [];
     const wsPath = getWorkspaceFolder();
 
     // Create a task for each Chapel file
     for (const fileUri of fileUris) {
       const filePath = path.resolve(fileUri.fsPath);
-      const outFile = filePath.replace(/\.chpl$/, '');
+      const outFile = filePath.replace(/\.chpl$/, "");
       const cwd = path.dirname(filePath);
 
       const task = taskCreator(replaceWithWorkspaceFolder(wsPath, filePath), replaceWithWorkspaceFolder(wsPath, outFile), replaceWithWorkspaceFolder(wsPath, cwd));
       tasks.push(task);
     }
     return tasks;
-  })
+  });
 }
 
 class ChplBuildTaskProvider implements vscode.TaskProvider {
@@ -164,7 +164,7 @@ class ChplBuildTaskProvider implements vscode.TaskProvider {
           env: Object.fromEntries(getEnv())
         });
         return buildTask;
-      }
+      };
       this.providePromise = getPerFileTasks(createBuildTask);
     }
     return this.providePromise;
@@ -176,7 +176,7 @@ class ChplBuildTaskProvider implements vscode.TaskProvider {
       const resolvedTask = getBuildTaskFromDefinition(definition, task);
       return resolvedTask;
     }
-    return undefined
+    return undefined;
   }
 }
 
@@ -208,7 +208,7 @@ class ChplRunTaskProvider implements vscode.TaskProvider {
       const resolvedTask = getRunTaskFromDefinition(definition, task);
       return resolvedTask;
     }
-    return undefined
+    return undefined;
   }
 
 
@@ -217,12 +217,12 @@ class ChplRunTaskProvider implements vscode.TaskProvider {
 async function chpl_runFileTask() {
   const editor = vscode.window.activeTextEditor;
   if (!editor) {
-    vscode.window.showErrorMessage('No active editor found.');
+    vscode.window.showErrorMessage("No active editor found.");
     return;
   }
   const document = editor.document;
-  if (document.languageId !== 'chapel') {
-    vscode.window.showErrorMessage('The current file is not a Chapel file.');
+  if (document.languageId !== "chapel") {
+    vscode.window.showErrorMessage("The current file is not a Chapel file.");
     return;
   }
   const wsPath = getWorkspaceFolder();
@@ -236,23 +236,23 @@ async function chpl_runFileTask() {
       .filter(task => {
         const definition = task.definition as ChplBuildTaskDefinition | ChplRunTaskDefinition;
 
-        const rootFile = path.resolve(resolveWorkspaceFolder(wsPath, definition.rootFile || ''));
+        const rootFile = path.resolve(resolveWorkspaceFolder(wsPath, definition.rootFile || ""));
         return rootFile === filePath;
       });
 
   if (tasks.length === 0) {
-    vscode.window.showErrorMessage('No tasks found for this file.');
+    vscode.window.showErrorMessage("No tasks found for this file.");
     return;
   }
   const selectedTask = await vscode.window.showQuickPick(tasks.map(task => task.name), {
-    placeHolder: 'Select a task to run',
+    placeHolder: "Select a task to run",
   });
   if (!selectedTask) {
     return;
   }
   const task = tasks.find(t => t.name === selectedTask);
   if (!task) {
-    vscode.window.showErrorMessage('Task not found.');
+    vscode.window.showErrorMessage("Task not found.");
     return;
   }
   await vscode.tasks.executeTask(task);
@@ -270,7 +270,7 @@ export function registerChapelTaskProvider(context: vscode.ExtensionContext): vo
   ));
 
   context.subscriptions.push(
-    vscode.commands.registerCommand('chapel.runFileTask', chpl_runFileTask));
+    vscode.commands.registerCommand("chapel.runFileTask", chpl_runFileTask));
 }
 
 
