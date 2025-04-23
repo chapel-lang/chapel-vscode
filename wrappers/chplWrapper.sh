@@ -25,4 +25,4 @@ if [ -z "$CHPL_HOME" ]; then
   unset CHPL_HOME
 fi
 
-$chpl_compiler $@
+$chpl_compiler "$@"
