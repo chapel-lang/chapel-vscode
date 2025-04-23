@@ -17,6 +17,7 @@
  * limitations under the License.
  */
 
+import { get } from "http";
 import * as vscode from "vscode";
 
 export interface ToolConfig {
@@ -40,11 +41,6 @@ const CLSConfigDefault: CLSConfig = { ...ToolConfigDefault, resolver: false };
 
 const configScope = "chapel";
 
-export function getChplHome(): string | undefined {
-  const config = vscode.workspace.getConfiguration(configScope);
-  const chplhome = config.get<string>("CHPL_HOME");
-  return chplhome ?? undefined;
-}
 export function setChplHome(chplhome: string) {
   const config = vscode.workspace.getConfiguration(configScope);
 
@@ -60,33 +56,44 @@ export function setChplHome(chplhome: string) {
     config.update("CHPL_HOME", chplhome, vscode.ConfigurationTarget.Global);
   }
 }
+
+function getConfigValue<ResultType>(
+  name: string,
+  defaultValue: ResultType
+): ResultType {
+  const config = vscode.workspace.getConfiguration(configScope);
+  const value = config.get<ResultType>(name);
+  return value ?? defaultValue;
+}
+
+export function getChplHome(): string | undefined {
+  return getConfigValue<string | undefined>("CHPL_HOME", undefined);
+}
 export function getChplDeveloper(): boolean {
-  const config = vscode.workspace.getConfiguration("chapel");
-  const devel = config.get<boolean>("CHPL_DEVELOPER");
-  return devel ?? false;
+  return getConfigValue<boolean>("chplDeveloper", false);
 }
 
 export function getChplCheckConfig(): ChplCheckConfig {
-  const config = vscode.workspace.getConfiguration(configScope);
-  const chplcheck =
-    config.get<ChplCheckConfig>("chplcheck") ?? ChplCheckConfigDefault;
-  return chplcheck;
+  return getConfigValue<ChplCheckConfig>(
+    "chplcheck",
+    ChplCheckConfigDefault
+  );
 }
 
 export function getCLSConfig(): CLSConfig {
-  const config = vscode.workspace.getConfiguration(configScope);
-  const cls = config.get<CLSConfig>("chpl-language-server") ?? CLSConfigDefault;
-  return cls;
+  return getConfigValue<CLSConfig>(
+    "chpl-language-server",
+    CLSConfigDefault
+  );
 }
 
 export function getPreferredDebugProvider(): string | undefined {
-  const config = vscode.workspace.getConfiguration(configScope);
-  const provider = config.get<string>("preferredDebugProvider");
-  return provider ?? undefined;
+  return getConfigValue<string | undefined>(
+    "preferredDebugProvider",
+    undefined
+  );
 }
 
 export function getDefaultCompiler(): string | undefined {
-  const config = vscode.workspace.getConfiguration(configScope);
-  const compiler = config.get<string>("defaultCompiler");
-  return compiler ?? undefined;
+  return getConfigValue<string | undefined>("defaultCompiler", undefined);
 }
