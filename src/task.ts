@@ -304,6 +304,7 @@ function resolveWorkspaceFolder(wsPath: string | undefined, filePath: string): s
   return filePath;
 }
 
+// TODO: this function will need reworking to properly work with multi-root workspaces
 function getWorkspaceFolder(): string | undefined {
   return vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
 }
