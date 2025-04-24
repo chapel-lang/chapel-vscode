@@ -4,3 +4,4 @@ bin
 **/.eslintrc.json
 .vscode
 **/.gitignore
+DEVELOPER.md

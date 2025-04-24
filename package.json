@@ -109,6 +109,108 @@
         "command": "chapel.createDebugConfigForActiveFile",
         "title": "Create a debug launch.json for the active Chapel file",
         "category": "chapel"
+      },
+      {
+        "command": "chapel.runFileTask",
+        "title": "Run File",
+        "category": "chapel",
+        "icon": "$(play)",
+        "shortTitle": "Run"
+      }
+    ],
+    "menus": {
+      "editor/title/run": [
+        {
+          "command": "chapel.runFileTask",
+          "when": "editorLangId == 'chapel'",
+          "group": "1_run"
+        }
+      ]
+    },
+    "taskDefinitions": [
+      {
+        "type": "chpl",
+        "required": [],
+        "when": "processExecutionSupported",
+        "properties": {
+          "rootFile": {
+            "type": "string",
+            "description": "Not included in compilation, the rootFile is only used to determine what file to show a \"Run\" button for."
+          },
+          "args": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Arguments to pass to the Chapel compiler"
+          },
+          "env": {
+            "type": "object",
+            "description": "Environment variables to set"
+          },
+          "cwd": {
+            "type": "string",
+            "description": "The working directory to use when running the task"
+          },
+          "compiler": {
+            "type": "string",
+            "description": "The compiler to use. If not provided, the extension will look for chpl in PATH and in CHPL_HOME"
+          }
+        }
+      },
+      {
+        "type": "chpl-run",
+        "required": [
+          "executable"
+        ],
+        "when": "processExecutionSupported",
+        "properties": {
+          "rootFile": {
+            "type": "string",
+            "description": "Not included in compilation, the rootFile is only used to determine what file to show a \"Run\" button for."
+          },
+          "executable": {
+            "type": "string",
+            "description": "The executable to run. If not provided, the extension will look for the executable in the same directory as the rootFile"
+          },
+          "numLocales": {
+            "type": "string",
+            "description": "The number of locales to use. If not provided, the extension will use the default value of 1"
+          },
+          "args": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Arguments to pass to the executable"
+          },
+          "env": {
+            "type": "object",
+            "description": "Environment variables to set"
+          },
+          "cwd": {
+            "type": "string",
+            "description": "The working directory to use when running the task"
+          }
+        }
+      }
+    ],
+    "problemMatchers": [
+      {
+        "name": "chpl-compiler",
+        "owner": "chpl",
+        "source": "chpl",
+        "fileLocation": "absolute",
+        "pattern": [
+          {
+            "regexp": "^(.+):([0-9]+): (error|warning): (.+)$",
+            "file": 1,
+            "line": 2,
+            "column": 0,
+            "severity": 3,
+            "message": 4
+          }
+        ]
       }
     ],
     "configuration": [
@@ -181,9 +283,11 @@
               "ms-vscode.cpptools"
             ],
             "default": "ms-vscode.cpptools"
-          }
-
-
+          },
+          "chapel.defaultCompiler": {
+            "scope": "window",
+            "type": "string",
+            "description": "The default compiler to use for Chapel. If not provided, the extension will look for chpl in PATH and in CHPL_HOME"
           }
         }
       }
