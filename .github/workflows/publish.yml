@@ -1,0 +1,28 @@
+name: Upload VSCode packages
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install Node.js
+      with:
+        node-version: 20
+      uses: actions/setup-node@v4
+    - name: NPM install
+      run: |
+        npm ci
+    - name: Publish to VSCode Marketplace
+      env:
+        VSCE_PAT: ${{ secrets.CHAPEL_VSCODE_VSCE_PAT }}
+      run: |
+        npx vsce publish
+    - name: Publish to Open VSX
+      env:
+        OPENVSX_PAT: ${{ secrets.CHAPEL_VSCODE_OPENVSX_PAT }}
+      run: |
+        npx ovsx publish -p "$OPENVSX_PAT"

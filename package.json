@@ -302,8 +302,9 @@
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
+    "lint": "eslint src --ext ts",
     "pretest": "npm run compile && npm run lint",
-    "lint": "eslint src --ext ts"
+    "test": ""
   },
   "devDependencies": {
     "@types/node": "18.x",
@@ -312,6 +313,7 @@
     "@typescript-eslint/parser": "^6.9.0",
     "@vscode/test-electron": "^2.3.6",
     "@vscode/vsce": "^3.3.2",
+    "ovsx": "^0.10.3",
     "eslint": "^8.52.0",
     "typescript": "^5.2.2"
   },
