@@ -27,6 +27,7 @@ jobs:
         npm run test
     - name: Test packaging
       run: |
+        mkdir -p bin
         npx vsce package -o bin/chapel.vsix
     - name: upload package
       uses: actions/upload-artifact@v4
