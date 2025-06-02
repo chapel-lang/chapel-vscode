@@ -9,10 +9,15 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18, 20]
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Install Node.js
       uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
     - name: NPM install
       run: |
         npm install
@@ -22,4 +27,9 @@ jobs:
         npm run test
     - name: Test packaging
       run: |
-        npx vsce package
+        npx vsce package -o bin/chapel.vsix
+    - name: upload package
+      uses: actions/upload-artifact@v4
+      with:
+        name: chapel.vsix
+        path: bin/chapel.vsix
