@@ -12,6 +12,13 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: 20
+    - name: Exit if branch exists
+      run: |
+        BRANCH_NAME="update-version"
+        if git ls-remote --heads origin $BRANCH_NAME | grep -q $BRANCH_NAME; then
+          echo "Branch $BRANCH_NAME already exists."
+          exit 1
+        fi
     - name: Create a new branch
       run: |
         git config --global user.email "github-action-bot@email.com"
