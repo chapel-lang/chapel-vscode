@@ -20,3 +20,6 @@ jobs:
       run: |
         npm run pretest
         npm run test
+    - name: Test packaging
+      run: |
+        npx vsce package
