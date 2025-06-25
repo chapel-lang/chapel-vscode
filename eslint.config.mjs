@@ -19,11 +19,10 @@ export default defineConfig([globalIgnores(["**/out", "**/dist", "**/*.d.ts"]), 
             format: ["camelCase", "PascalCase"],
         }],
 
-        "@typescript-eslint/semi": "warn",
         curly: "warn",
         eqeqeq: "warn",
         quotes: "warn",
         "no-throw-literal": "warn",
-        semi: "off",
+        semi: "warn",
     },
 }]);
