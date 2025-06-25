@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [18, 20]
+        node-version: [18, 20, 22, 24]
     steps:
     - uses: actions/checkout@v4
     - name: Install Node.js
@@ -21,6 +21,7 @@ jobs:
     - name: NPM install
       run: |
         npm ci
+        npm list -a
     - name: Test
       run: |
         npm run pretest

@@ -16,6 +16,7 @@ jobs:
     - name: NPM install
       run: |
         npm ci
+        npm list -a
     - name: Publish to VSCode Marketplace
       env:
         VSCE_PAT: ${{ secrets.CHAPEL_VSCODE_VSCE_PAT }}
