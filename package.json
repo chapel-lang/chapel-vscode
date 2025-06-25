@@ -313,7 +313,7 @@
     "@typescript-eslint/parser": "^8.3.5",
     "@vscode/test-electron": "^2.3.6",
     "@vscode/vsce": "^3.6.0",
-    "ovsx": "^0.10.3",
+    "ovsx": "^0.10.4",
     "eslint": "^9.29.0",
     "typescript": "^5.2.2"
   },
