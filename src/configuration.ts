@@ -97,3 +97,15 @@ export function getPreferredDebugProvider(): string | undefined {
 export function getDefaultCompiler(): string | undefined {
   return getConfigValue<string | undefined>("defaultCompiler", undefined);
 }
+
+export function getDefaultMason(): string | undefined {
+  return getConfigValue<string | undefined>("defaultMason", undefined);
+}
+
+export function getBaseEnv(): Map<string, string> {
+  const envObj = getConfigValue<{ [key: string]: string }>(
+    "baseEnv",
+    {}
+  );
+  return new Map(Object.entries(envObj));
+}

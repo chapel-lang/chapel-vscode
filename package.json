@@ -108,15 +108,36 @@
       {
         "command": "chapel.createDebugConfigForActiveFile",
         "title": "Create a debug launch.json for the active Chapel file",
-        "category": "chapel"
+        "category": "chapel",
+        "enablement": "editorLangId == 'chapel'"
       },
       {
         "command": "chapel.runFileTask",
         "title": "Run File",
         "category": "chapel",
         "icon": "$(play)",
-        "shortTitle": "Run"
+        "shortTitle": "Run",
+        "enablement": "editorLangId == 'chapel'"
+      },
+      {
+        "command": "chapel.mason.build",
+        "title": "mason build",
+        "category": "mason",
+        "icon": "$(tools)"
+      },
+      {
+        "command": "chapel.mason.run",
+        "title": "mason run",
+        "category": "mason",
+        "icon": "$(play)"
+      },
+      {
+        "command": "chapel.mason.test",
+        "title": "mason test",
+        "category": "mason",
+        "icon": "$(beaker)"
       }
+
     ],
     "menus": {
       "editor/title/run": [
@@ -124,6 +145,21 @@
           "command": "chapel.runFileTask",
           "when": "editorLangId == 'chapel'",
           "group": "1_run"
+        },
+        {
+          "command": "chapel.mason.build",
+          "when": "resourceFilename == 'Mason.toml'",
+          "group": "1_mason"
+        },
+        {
+          "command": "chapel.mason.run",
+          "when": "resourceFilename == 'Mason.toml'",
+          "group": "1_mason"
+        },
+        {
+          "command": "chapel.mason.test",
+          "when": "resourceFilename == 'Mason.toml'",
+          "group": "1_mason"
         }
       ]
     },
@@ -191,6 +227,39 @@
           "cwd": {
             "type": "string",
             "description": "The working directory to use when running the task"
+          }
+        }
+      },
+      {
+        "type": "mason",
+        "required": [
+          "command"
+        ],
+        "when": "processExecutionSupported",
+        "properties": {
+          "command": {
+            "type": "string",
+            "enum": [
+              "build",
+              "run",
+              "test"
+            ],
+            "description": "The mason command to run"
+          },
+          "args": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Arguments to pass to the mason command"
+          },
+          "env": {
+            "type": "object",
+            "description": "Environment variables to set"
+          },
+          "cwd": {
+            "type": "string",
+            "description": "The working directory to use when running mason. This should be the same directory as the Mason.toml file. If not provided the workspace root will be used."
           }
         }
       }
@@ -288,6 +357,19 @@
             "scope": "window",
             "type": "string",
             "description": "The default compiler to use for Chapel. If not provided, the extension will look for chpl in PATH and in CHPL_HOME"
+          },
+          "chapel.defaultMason": {
+            "scope": "window",
+            "type": "string",
+            "description": "The default path to 'mason'. If not provided, the extension will look for mason in PATH and in CHPL_HOME"
+          },
+          "chapel.baseEnv": {
+            "scope": "window",
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Environment variables to set for all Chapel tasks. This is generally only needed if you to set specific Chapel environment variables to a non-default value. These can be overridden on a per-task basis using the 'env' property of a task."
           }
         }
       }
