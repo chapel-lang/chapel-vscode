@@ -10,7 +10,8 @@
     { "include": "#constants" },
     { "include": "#variables" },
     { "include": "#important_globals" },
-    { "include": "#operators" }
+    { "include": "#operators" },
+    { "include": "#attributes" }
   ],
   "repository": {
     "extern_block": {
@@ -33,15 +34,11 @@
           "name": "keyword.control.chapel"
         },
         {
-          "match": "\\b(single)\\b",
-          "name": "invalid.deprecated.chapel"
-        },
-        {
           "match": "\\b(bool|bytes|complex|dmap|domain|imag|int|locale|nothing|opaque|range|real|string|subdomain|tuple|uint|void)\\b",
           "name": "storage.type.chapel"
         },
         {
-          "match": "\\b(borrowed|config|const|owned|param|private|public|ref|shared|single|sparse|sync|type|unmanaged|var)\\b",
+          "match": "\\b(borrowed|config|const|owned|param|private|public|ref|shared|sparse|sync|type|unmanaged|var)\\b",
           "name": "storage.modifier.chapel"
         }
       ]
@@ -149,6 +146,14 @@
         {
           "match": "\\b(here|LocaleSpace|Locales|numLocales)\\b",
           "name": "support.variable.chapel"
+        }
+      ]
+    },
+    "attributes": {
+      "patterns": [
+        {
+          "match": "(@[a-zA-Z_][a-zA-Z0-9_]*(?:\\.[a-zA-Z_][a-zA-Z0-9_]*)?)",
+          "name": "storage.type.attribute.chapel"
         }
       ]
     },
