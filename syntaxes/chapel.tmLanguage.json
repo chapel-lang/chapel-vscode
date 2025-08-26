@@ -171,7 +171,11 @@
           "name": "constant.other.placeholder.chapel"
         },
         {
-          "match": "(%[{]([#]+|[#]*[.][#]+)[}])",
+          "match": "(%[{]([#]+|[#]*[.][#]*)[}])",
+          "name": "constant.other.placeholder.chapel"
+        },
+        {
+          "match": "(%[{](.*?)[}])",
           "name": "constant.other.placeholder.chapel"
         },
         {
