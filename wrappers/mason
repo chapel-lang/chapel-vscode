@@ -10,6 +10,11 @@ if [ -n "$CHPL_HOME" ]; then
   exit_code=$?
   if [ $exit_code -eq 0 ]; then
     chpl_bin_subdir=$($chpl_python $CHPL_HOME/util/chplenv/chpl_bin_subdir.py)
+    exit_code=$?
+    if [ $exit_code -ne 0 ]; then
+      echo "Could not determine subdirectory" >&2
+      exit 1
+    fi
     mason="$CHPL_HOME/bin/$chpl_bin_subdir/mason"
   fi
 else
@@ -17,7 +22,7 @@ else
 fi
 
 if [ ! -x "$mason" ]; then
-  echo "Could not find suitable install of 'mason' in \$CHPL_HOME or \$PATH"
+  echo "Could not find suitable install of 'mason' in \$CHPL_HOME or \$PATH" >&2
   exit 1
 fi
 
