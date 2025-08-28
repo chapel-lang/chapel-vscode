@@ -111,7 +111,7 @@ function getBuildTaskFromDefinition(definition: ChplBuildTaskDefinition, oldTask
     }
   );
   const fileBaseName = definition.rootFile ? path.basename(definition.rootFile) : undefined;
-  const name = oldTask?.name || fileBaseName ? `Compile ${fileBaseName}` : "Compile";
+  const name = oldTask?.name || (fileBaseName ? `Compile ${fileBaseName}` : "Compile");
 
   const task = new vscode.Task(
     definition,
