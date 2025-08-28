@@ -38,20 +38,19 @@ export class ChplTerminalLinkProvider implements vscode.TerminalLinkProvider {
   provideTerminalLinks(context: vscode.TerminalLinkContext, _token: vscode.CancellationToken): vscode.ProviderResult<ChplLink[]> {
     const line = context.line;
     const startIndex = line.indexOf("$CHPL_HOME");
-    if (startIndex === -1) {
-      return [];
-    }
+    if (startIndex === -1) return [];
+
     const suffix = ".chpl";
     const endIndex = line.indexOf(suffix + ":", startIndex);
-    if (endIndex === -1) {
-      return [];
-    }
+    if (endIndex === -1) return [];
+
     var path = line.substring(startIndex, endIndex + suffix.length);
 
     const lineNumStart = endIndex + suffix.length + 1;
     const lineNumEnd = line.indexOf(":", lineNumStart);
     const lineNum = lineNumEnd !== -1 ?
       parseInt(line.substring(lineNumStart, lineNumEnd)) : -1;
+    if (isNaN(lineNum)) return [];
 
     const length = lineNum !== -1 ?
       lineNumEnd - startIndex : endIndex + suffix.length + 1 - startIndex;
