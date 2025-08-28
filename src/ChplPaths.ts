@@ -23,7 +23,7 @@ import * as vscode from "vscode";
 import * as cfg from "./configuration";
 import { showInvalidPathWarning } from "./extension";
 import assert from "assert";
-import { CHPL_WRAPPER } from "./constants";
+import { CHPL_WRAPPER, MASON_WRAPPER } from "./constants";
 
 export function checkChplHome(
   chplhome: string | undefined
@@ -247,6 +247,13 @@ export function getEnvAffectingChapel(extra_globs?: string[]): Map<string, strin
     env.set("CHPL_DEVELOPER", process.env["CHPL_DEVELOPER"]);
   }
 
+
+  // set the values from chapel.baseEnv
+  const baseEnv = cfg.getBaseEnv();
+  for (const [k, v] of baseEnv) {
+    env.set(k, v);
+  }
+
   return env;
 
 }
@@ -257,5 +264,14 @@ export function getDefaultChplCompiler(): string {
     return compiler;
   } else {
     return CHPL_WRAPPER;
+  }
+}
+
+export function getDefaultMason(): string {
+  const mason = cfg.getDefaultMason();
+  if (mason !== undefined && mason !== "") {
+    return mason;
+  } else {
+    return MASON_WRAPPER;
   }
 }
