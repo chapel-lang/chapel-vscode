@@ -2,7 +2,7 @@
   "name": "chapel-vscode",
   "displayName": "Chapel Language",
   "description": "A collection of development tools for programming in Chapel",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "engines": {
     "vscode": "^1.70.0"
   },
@@ -137,7 +137,6 @@
         "category": "mason",
         "icon": "$(beaker)"
       }
-
     ],
     "menus": {
       "editor/title/run": [
