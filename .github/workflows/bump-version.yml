@@ -21,8 +21,8 @@ jobs:
         fi
     - name: Create a new branch
       run: |
-        git config --global user.email "github-action-bot@email.com"
-        git config --global user.name "github action"
+        git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git config --global user.name "github-actions[bot]"
         git checkout -b update-version
         git push --set-upstream origin update-version
     - name: Bump Version
