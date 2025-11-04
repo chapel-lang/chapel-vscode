@@ -81,13 +81,17 @@ export class ChplTerminalLinkProvider implements vscode.TerminalLinkProvider {
 
       vscode.workspace.openTextDocument(uri).then((doc) => {
         vscode.window.showTextDocument(doc).then((editor) => {
-          if (link.data.lineNum === -1) {
+          const lineNum = link.data.lineNum;
+          if (lineNum === -1) {
             return;
           }
+          // const lineWidth = editor.document.lineAt(lineNum).text.length;
+
           // jump to the line
-          const pos = new vscode.Position(link.data.lineNum - 1, 0);
-          var range = new vscode.Range(pos, pos);
-          editor.revealRange(range);
+          const startPos = new vscode.Position(lineNum - 1, 0);
+          var range = new vscode.Range(startPos, startPos);
+          editor.revealRange(range, vscode.TextEditorRevealType.InCenter);
+          editor.selection = new vscode.Selection(startPos, startPos);
         });
       });
     }
