@@ -34,8 +34,8 @@ export class ChplLink implements vscode.TerminalLink {
   }
 }
 
-const optionalLineCol = '(?::(\\d+)(?::(\\d+))?)?';
-const linePattern = new RegExp('(\\$CHPL_HOME[^\\s:]+)' + optionalLineCol);
+const optionalLineCol = "(?::(\\d+)(?::(\\d+))?)?";
+const linePattern = new RegExp("(\\$CHPL_HOME[^\\s:]+)" + optionalLineCol);
 
 // a terminal link provider to handle links like $CHPL_HOME/...
 export class ChplTerminalLinkProvider implements vscode.TerminalLinkProvider {
