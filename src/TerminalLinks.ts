@@ -20,6 +20,7 @@
 import * as vscode from "vscode";
 import * as fs from "fs";
 import { getChplHome } from "./configuration";
+import { logger } from "./extension";
 
 export class ChplLink implements vscode.TerminalLink {
   startIndex: number;
@@ -33,33 +34,35 @@ export class ChplLink implements vscode.TerminalLink {
   }
 }
 
+const optionalLineCol = "(?::(\\d+)(?::(\\d+))?)?";
+const linePattern = new RegExp("(\\$CHPL_HOME[^\\s:]+)" + optionalLineCol);
+
 // a terminal link provider to handle links like $CHPL_HOME/...
 export class ChplTerminalLinkProvider implements vscode.TerminalLinkProvider {
   provideTerminalLinks(context: vscode.TerminalLinkContext, _token: vscode.CancellationToken): vscode.ProviderResult<ChplLink[]> {
     const line = context.line;
-    const startIndex = line.indexOf("$CHPL_HOME");
-    if (startIndex === -1) return [];
 
-    const suffix = ".chpl";
-    const endIndex = line.indexOf(suffix + ":", startIndex);
-    if (endIndex === -1) return [];
+    const match = linePattern.exec(line);
+    if (!match) {
+      return [];
+    }
 
-    var path = line.substring(startIndex, endIndex + suffix.length);
+    let path = match[1];
+    const lineNumStr = match[2];
+    const lineNum = lineNumStr ? parseInt(lineNumStr) : -1;
+    logger.debug(`Found terminal link: ${path} at line ${lineNum}`);
 
-    const lineNumStart = endIndex + suffix.length + 1;
-    const lineNumEnd = line.indexOf(":", lineNumStart);
-    const lineNum = lineNumEnd !== -1 ?
-      parseInt(line.substring(lineNumStart, lineNumEnd)) : -1;
-    if (isNaN(lineNum)) return [];
-
-    const length = lineNum !== -1 ?
-      lineNumEnd - startIndex : endIndex + suffix.length + 1 - startIndex;
+    const startIndex = match.index;
+    const length = match[0].length;
+    logger.debug(`Link startIndex: ${startIndex}, length: ${length}`);
 
     // resolve the CHPL_HOME
     const chplHome = getChplHome();
+    logger.debug(`Resolving $CHPL_HOME to ${chplHome}`);
     if (chplHome && chplHome !== "") {
       path = path.replace("$CHPL_HOME", chplHome);
     }
+    logger.debug(`Resolved terminal link path: ${path}`);
 
     const termLink = new ChplLink(startIndex, length, path, lineNum);
     return [termLink];
@@ -78,13 +81,17 @@ export class ChplTerminalLinkProvider implements vscode.TerminalLinkProvider {
 
       vscode.workspace.openTextDocument(uri).then((doc) => {
         vscode.window.showTextDocument(doc).then((editor) => {
-          if (link.data.lineNum === -1) {
+          const lineNum = link.data.lineNum;
+          if (lineNum === -1) {
             return;
           }
+          // const lineWidth = editor.document.lineAt(lineNum).text.length;
+
           // jump to the line
-          const pos = new vscode.Position(link.data.lineNum - 1, 0);
-          var range = new vscode.Range(pos, pos);
-          editor.revealRange(range);
+          const startPos = new vscode.Position(lineNum - 1, 0);
+          var range = new vscode.Range(startPos, startPos);
+          editor.revealRange(range, vscode.TextEditorRevealType.InCenter);
+          editor.selection = new vscode.Selection(startPos, startPos);
         });
       });
     }
