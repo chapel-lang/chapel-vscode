@@ -2,6 +2,14 @@
 **/tsconfig.json
 bin
 **/.eslintrc.json
+**/eslint.config.mjs
+**/eslint.config.js
 .vscode
 **/.gitignore
 DEVELOPER.md
+node_modules
+src/
+out/
+tsconfig.json
+esbuild.js
+.github
