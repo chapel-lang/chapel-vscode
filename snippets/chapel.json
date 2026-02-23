@@ -371,5 +371,21 @@
       "}"
     ],
     "description": "create a task each core on each locale"
+  },
+  "serialize": {
+    "prefix": "proc serialize",
+    "body": [
+      "proc serialize(writer, ref serializer) throws {",
+      "  $1",
+      "}"
+    ]
+  },
+  "deserialize": {
+    "prefix": "proc deserialize",
+    "body": [
+      "proc deserialize(reader, ref deserializer) throws {",
+      "  $1",
+      "}"
+    ]
   }
 }
