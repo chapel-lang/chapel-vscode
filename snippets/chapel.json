@@ -372,18 +372,34 @@
     ],
     "description": "create a task each core on each locale"
   },
-  "serialize": {
+  "serialize-record": {
     "prefix": "proc serialize",
     "body": [
-      "proc serialize(writer, ref serializer) throws {",
+      "proc serialize(writer: fileWriter(?), ref serializer) throws {",
       "  $1",
       "}"
     ]
   },
-  "deserialize": {
+  "serialize-class": {
+    "prefix": "proc serialize",
+    "body": [
+      "override proc serialize(writer: fileWriter(?), ref serializer) throws {",
+      "  $1",
+      "}"
+    ]
+  },
+  "deserialize-record": {
     "prefix": "proc deserialize",
     "body": [
-      "proc deserialize(reader, ref deserializer) throws {",
+      "proc ref deserialize(reader: fileReader(?), ref deserializer) throws {",
+      "  $1",
+      "}"
+    ]
+  },
+  "deserialize-class": {
+    "prefix": "proc deserialize",
+    "body": [
+      "override proc deserialize(reader: fileReader(?), ref deserializer) throws {",
       "  $1",
       "}"
     ]
