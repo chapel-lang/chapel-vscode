@@ -403,5 +403,25 @@
       "  $1",
       "}"
     ]
+  },
+  "parallel-iterators": {
+    "prefix": "iter",
+    "body": [
+      "iter $1() {",
+      "  $2",
+      "}",
+      "iter $1(param tag: iterKind)",
+      " where tag == iterKind.standalone {",
+      "  ",
+      "}",
+      "iter $1(param tag: iterKind)",
+      " where tag == iterKind.leader {",
+      "  ",
+      "}",
+      "iter $1(param tag: iterKind, followThis)",
+      " where tag == iterKind.follower {",
+      "  ",
+      "}"
+    ]
   }
 }
