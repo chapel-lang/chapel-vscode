@@ -371,5 +371,57 @@
       "}"
     ],
     "description": "create a task each core on each locale"
+  },
+  "serialize-record": {
+    "prefix": "proc serialize",
+    "body": [
+      "proc serialize(writer: fileWriter(?), ref serializer) throws {",
+      "  $1",
+      "}"
+    ]
+  },
+  "serialize-class": {
+    "prefix": "proc serialize",
+    "body": [
+      "override proc serialize(writer: fileWriter(?), ref serializer) throws {",
+      "  $1",
+      "}"
+    ]
+  },
+  "deserialize-record": {
+    "prefix": "proc deserialize",
+    "body": [
+      "proc ref deserialize(reader: fileReader(?), ref deserializer) throws {",
+      "  $1",
+      "}"
+    ]
+  },
+  "deserialize-class": {
+    "prefix": "proc deserialize",
+    "body": [
+      "override proc deserialize(reader: fileReader(?), ref deserializer) throws {",
+      "  $1",
+      "}"
+    ]
+  },
+  "parallel-iterators": {
+    "prefix": "iter",
+    "body": [
+      "iter $1() {",
+      "  $2",
+      "}",
+      "iter $1(param tag: iterKind)",
+      " where tag == iterKind.standalone {",
+      "  ",
+      "}",
+      "iter $1(param tag: iterKind)",
+      " where tag == iterKind.leader {",
+      "  ",
+      "}",
+      "iter $1(param tag: iterKind, followThis)",
+      " where tag == iterKind.follower {",
+      "  ",
+      "}"
+    ]
   }
 }
