@@ -423,5 +423,34 @@
       "  ",
       "}"
     ]
+  },
+  "UnitTest-module": {
+    "prefix": "use UnitTest",
+    "body": [
+      "use UnitTest;",
+      "",
+      "$1",
+      "",
+      "UnitTest.main();"
+    ],
+    "description": "new UnitTest skeleton"
+  },
+  "UnitTest-test": {
+    "prefix": "proc test",
+    "body": [
+      "proc $1(test: borrowed Test) throws {",
+      "  $2",
+      "}"
+    ],
+    "description": "UnitTest test procedure"
+  },
+   "UnitTest-test-named": {
+    "prefix": "(test: borrowed Test) throws",
+    "body": [
+      "(test: borrowed Test) throws {",
+      "  $2",
+      "}"
+    ],
+    "description": "UnitTest test procedure"
   }
 }
