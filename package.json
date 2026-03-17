@@ -20,7 +20,7 @@
     "chapel"
   ],
   "main": "./dist/extension.js",
-  "icon": "./icons/chapel.png",
+  "icon": "./icons/chapel-cropped.png",
   "license": "SEE LICENSE IN LICENSE",
   "bugs": {
     "url": "https://github.com/chapel-lang/chapel-vscode/issues"
@@ -46,8 +46,8 @@
         ],
         "configuration": "./chapel-language-configuration.json",
         "icon": {
-          "light": "./icons/chapel.png",
-          "dark": "./icons/chapel.png"
+          "light": "./icons/chapel-cropped.png",
+          "dark": "./icons/chapel-cropped.png"
         }
       },
       {
