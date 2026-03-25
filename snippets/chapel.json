@@ -452,5 +452,17 @@
       "}"
     ],
     "description": "UnitTest test procedure"
+  },
+  "contextManager": {
+    "prefix": "proc enterContext",
+    "body": [
+      "proc enterContext() {",
+      "  $1",
+      "}",
+      "proc exitContext(in error: owned Error?) {",
+      "  $2",
+      "}"
+    ],
+    "description": "context manager skeleton"
   }
 }
