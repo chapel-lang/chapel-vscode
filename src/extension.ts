@@ -155,6 +155,23 @@ export function activate(context: vscode.ExtensionContext) {
     })
   );
 
+  const clsCommandWatcher = vscode.workspace.createFileSystemWatcher(
+    "**/.cls-commands.json",
+    false, false, true
+  );
+  context.subscriptions.push(clsCommandWatcher);
+  let clsRestartTimeout: ReturnType<typeof setTimeout> | undefined;
+  clsCommandWatcher.onDidChange(async () => {
+    if (clsRestartTimeout !== undefined) {
+      clearTimeout(clsRestartTimeout);
+    }
+    clsRestartTimeout = setTimeout(async () => {
+      clsRestartTimeout = undefined;
+      await clsClient.stop();
+      await clsClient.start();
+    }, 5000);
+  });
+
   // Start the language server once the user opens the first text document
   context.subscriptions.push(
     vscode.workspace.onDidOpenTextDocument(async () => {
