@@ -163,8 +163,7 @@ export function activate(context: vscode.ExtensionContext) {
   );
 
   const clsCommandWatcher = vscode.workspace.createFileSystemWatcher(
-    "**/.cls-commands.json",
-    false, false, true
+    "**/.cls-commands.json"
   );
   context.subscriptions.push(clsCommandWatcher);
   let clsRestartTimeout: ReturnType<typeof setTimeout> | undefined;
