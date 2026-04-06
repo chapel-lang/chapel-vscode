@@ -144,16 +144,39 @@ export function activate(context: vscode.ExtensionContext) {
       }
     )
   );
+  let configChangeTimeout: ReturnType<typeof setTimeout> | undefined;
   context.subscriptions.push(
     vscode.workspace.onDidChangeConfiguration(async (e) => {
       if (e.affectsConfiguration("chapel")) {
-        Promise.all([
-          chplcheckClient.resetConfig(getChplCheckConfig()),
-          clsClient.resetConfig(getCLSConfig()),
-        ]);
+        if (configChangeTimeout !== undefined) {
+          clearTimeout(configChangeTimeout);
+        }
+        configChangeTimeout = setTimeout(async () => {
+          configChangeTimeout = undefined;
+          Promise.all([
+            chplcheckClient.resetConfig(getChplCheckConfig()),
+            clsClient.resetConfig(getCLSConfig()),
+          ]);
+        }, 5000);
       }
     })
   );
+
+  const clsCommandWatcher = vscode.workspace.createFileSystemWatcher(
+    "**/.cls-commands.json"
+  );
+  context.subscriptions.push(clsCommandWatcher);
+  let clsRestartTimeout: ReturnType<typeof setTimeout> | undefined;
+  clsCommandWatcher.onDidChange(async () => {
+    if (clsRestartTimeout !== undefined) {
+      clearTimeout(clsRestartTimeout);
+    }
+    clsRestartTimeout = setTimeout(async () => {
+      clsRestartTimeout = undefined;
+      await clsClient.stop();
+      await clsClient.start();
+    }, 5000);
+  });
 
   // Start the language server once the user opens the first text document
   context.subscriptions.push(
