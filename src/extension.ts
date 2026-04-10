@@ -144,15 +144,19 @@ export function activate(context: vscode.ExtensionContext) {
       }
     )
   );
-  let configChangeTimeout: ReturnType<typeof setTimeout> | undefined;
+  let restartTimeout: ReturnType<typeof setTimeout> | undefined;
+  let configRestartTimeout: ReturnType<typeof setTimeout> | undefined;
+
   context.subscriptions.push(
     vscode.workspace.onDidChangeConfiguration(async (e) => {
       if (e.affectsConfiguration("chapel")) {
-        if (configChangeTimeout !== undefined) {
-          clearTimeout(configChangeTimeout);
+        logger.debug("Configuration changed, queuing server restart");
+        if (configRestartTimeout !== undefined) {
+          clearTimeout(configRestartTimeout);
         }
-        configChangeTimeout = setTimeout(async () => {
-          configChangeTimeout = undefined;
+        configRestartTimeout = setTimeout(async () => {
+          configRestartTimeout = undefined;
+          logger.debug("Restarting servers due to configuration change");
           Promise.all([
             chplcheckClient.resetConfig(getChplCheckConfig()),
             clsClient.resetConfig(getCLSConfig()),
@@ -166,13 +170,31 @@ export function activate(context: vscode.ExtensionContext) {
     "**/.cls-commands.json"
   );
   context.subscriptions.push(clsCommandWatcher);
-  let clsRestartTimeout: ReturnType<typeof setTimeout> | undefined;
   clsCommandWatcher.onDidChange(async () => {
-    if (clsRestartTimeout !== undefined) {
-      clearTimeout(clsRestartTimeout);
+    logger.debug(".cls-commands.json changed, queuing language server restart");
+    if (restartTimeout !== undefined) {
+      clearTimeout(restartTimeout);
     }
-    clsRestartTimeout = setTimeout(async () => {
-      clsRestartTimeout = undefined;
+    restartTimeout = setTimeout(async () => {
+      restartTimeout = undefined;
+      logger.debug("Restarting language server due to .cls-commands.json change");
+      await clsClient.stop();
+      await clsClient.start();
+    }, 5000);
+  });
+
+  const masonCommandWatcher = vscode.workspace.createFileSystemWatcher(
+    new vscode.RelativePattern(vscode.workspace.workspaceFolders?.[0] || "", "Mason.{toml,lock}")
+  );
+  context.subscriptions.push(masonCommandWatcher);
+  masonCommandWatcher.onDidChange(async () => {
+    logger.debug("Mason.toml or Mason.lock changed, queuing language server restart");
+    if (restartTimeout !== undefined) {
+      clearTimeout(restartTimeout);
+    }
+    restartTimeout = setTimeout(async () => {
+      restartTimeout = undefined;
+      logger.debug("Restarting language server due to Mason.toml or Mason.lock change");
       await clsClient.stop();
       await clsClient.start();
     }, 5000);
