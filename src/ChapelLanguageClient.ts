@@ -55,8 +55,8 @@ function meetsMinVersion(version: string, minVersion: string): boolean {
   for (let i = 0; i < Math.max(parts.length, minParts.length); i++) {
     const a = parts[i] ?? 0;
     const b = minParts[i] ?? 0;
-    if (a > b) return true;
-    if (a < b) return false;
+    if (a > b) { return true; };
+    if (a < b) { return false; };
   }
   return true;
 }
