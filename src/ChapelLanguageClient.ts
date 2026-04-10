@@ -18,6 +18,7 @@
  */
 
 import { ToolConfig, getBaseEnv, getChplDeveloper, getChplHome } from "./configuration";
+import { execFileSync } from "child_process";
 import * as fs from "fs";
 import * as vscode from "vscode";
 import * as vlc from "vscode-languageclient/node";
@@ -28,9 +29,37 @@ import {
   findToolPath,
   findPossibleChplHomes,
   getWorkspaceFolder,
+  getDefaultMason,
 } from "./ChplPaths";
 import { showChplHomeMissingError } from "./extension";
 import * as path from "path";
+
+function getToolVersion(logger: vscode.LogOutputChannel, toolPath: string, env: NodeJS.ProcessEnv): string | undefined {
+  try {
+    const output = execFileSync(toolPath, ["--version"], {
+      timeout: 5000,
+      encoding: "utf-8",
+      env: env,
+    });
+    const match = output.match(/(\d+\.\d+\.\d+)/);
+    return match ? match[1] : undefined;
+  } catch (e) {
+    logger.error(`Failed to get version for tool at ${toolPath}: ${e}`);
+    return undefined;
+  }
+}
+
+function meetsMinVersion(version: string, minVersion: string): boolean {
+  const parts = version.split(".").map(Number);
+  const minParts = minVersion.split(".").map(Number);
+  for (let i = 0; i < Math.max(parts.length, minParts.length); i++) {
+    const a = parts[i] ?? 0;
+    const b = minParts[i] ?? 0;
+    if (a > b) return true;
+    if (a < b) return false;
+  }
+  return true;
+}
 
 export enum LanguageClientState {
   DISABLED,
@@ -353,7 +382,7 @@ export abstract class ChapelLanguageClient {
   stop(): Promise<void> {
     return new Promise((resolve, reject) => {
       if (this.client && this.state === LanguageClientState.RUNNING) {
-        this.client.errorHandler = () => {};
+        this.client.errorHandler = () => { };
         this.client.stop().catch(reject);
         this.client.dispose();
         this.client = undefined;
@@ -398,6 +427,13 @@ export class CLSClient extends ChapelLanguageClient {
   }
   alwaysArguments(): Array<string> {
     let args = [];
+    const env = this.envForConfig();
+    const version = getToolVersion(this.logger, this.tool_path, env);
+    // log the version
+    this.logger.debug(`chpl-language-server version: ${version}`);
+    if (version && meetsMinVersion(version, "2.9.0")) {
+      args.push("--mason-path=" + getDefaultMason());
+    }
     if ("resolver" in this.config && this.config.resolver) {
       args.push("--resolver");
     }
