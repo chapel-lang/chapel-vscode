@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-import { ToolConfig, getChplDeveloper, getChplHome } from "./configuration";
+import { ToolConfig, getBaseEnv, getChplDeveloper, getChplHome } from "./configuration";
 import * as fs from "fs";
 import * as vscode from "vscode";
 import * as vlc from "vscode-languageclient/node";
@@ -185,6 +185,25 @@ export abstract class ChapelLanguageClient {
 
   protected abstract alwaysArguments(): Array<string>;
 
+  envForConfig(): NodeJS.ProcessEnv {
+    let env = cloneEnv();
+    for (const [key, value] of getBaseEnv()) {
+      env[key] = value;
+    }
+    const chplhome = getChplHome();
+    if (chplhome !== undefined && chplhome !== "") {
+      this.logger.info(`Using CHPL_HOME: ${chplhome}`);
+      const chplHomeError = checkChplHome(chplhome);
+      if (chplHomeError !== undefined) {
+        showChplHomeMissingError(chplHomeError);
+      } else {
+        env.CHPL_HOME = chplhome;
+      }
+    }
+    env.CHPL_DEVELOPER = getChplDeveloper() ? "1" : "0";
+    return env;
+  }
+
   start(): Promise<void> {
     if (this.state !== LanguageClientState.STOPPED) {
       return Promise.resolve();
@@ -198,18 +217,7 @@ export abstract class ChapelLanguageClient {
       return Promise.reject();
     }
 
-    let env = cloneEnv();
-    const chplhome = getChplHome();
-    if (chplhome !== undefined && chplhome !== "") {
-      this.logger.info(`Using CHPL_HOME: ${chplhome}`);
-      const chplHomeError = checkChplHome(chplhome);
-      if (chplHomeError !== undefined) {
-        showChplHomeMissingError(chplHomeError);
-      } else {
-        env.CHPL_HOME = chplhome;
-      }
-    }
-    env.CHPL_DEVELOPER = getChplDeveloper() ? "1" : "0";
+    const env = this.envForConfig();
 
     let args = this.alwaysArguments();
     args.push(...this.config.args);
