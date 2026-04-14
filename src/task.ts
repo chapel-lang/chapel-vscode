@@ -326,7 +326,7 @@ class ChplBuildAndRunTaskProvider implements vscode.TaskProvider {
           env: Object.fromEntries(getEnv())
         });
         return buildAndRunTask;
-      }
+      };
       this.providePromise = getPerFileTasks(createBuildAndRunTask);
     }
     return this.providePromise;
