@@ -230,6 +230,57 @@
         }
       },
       {
+        "type": "chpl-build-run",
+        "required": [
+          "sourceFiles",
+          "executable"
+        ],
+        "when": "processExecutionSupported",
+        "properties": {
+          "sourceFiles": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "The source files to compile"
+          },
+          "executable": {
+            "type": "string",
+            "description": "The executable to produce and run"
+          },
+          "numLocales": {
+            "type": "string",
+            "description": "The number of locales to use. If not provided, the extension will use the default value of 1"
+          },
+          "runArgs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Arguments to pass to the executable when running"
+          },
+          "compiler": {
+            "type": "string",
+            "description": "The compiler to use. If not provided, the extension will look for chpl in PATH and in CHPL_HOME"
+          },
+          "compileArgs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Additional arguments to pass to the Chapel compiler"
+          },
+          "env": {
+            "type": "object",
+            "description": "Environment variables to set"
+          },
+          "cwd": {
+            "type": "string",
+            "description": "The working directory to use when compiling and running"
+          }
+        }
+      },
+      {
         "type": "mason",
         "required": [
           "command"

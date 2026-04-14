@@ -22,6 +22,7 @@ import * as vscode from "vscode";
 import * as path from "path";
 import * as fs from "fs";
 import { getDefaultChplCompiler, getEnvAffectingChapel, getDefaultMason } from "./ChplPaths";
+import { CONDITIONAL_BUILD_RUN } from "./constants";
 import { logger } from "./extension";
 
 
@@ -64,6 +65,33 @@ interface ChplRunTaskDefinition extends vscode.TaskDefinition {
   cwd?: string;
 }
 
+interface ChplBuildAndRunTaskDefinition extends vscode.TaskDefinition {
+  /* Source files */
+  sourceFiles: string[];
+
+  /* the executable to run */
+  executable: string;
+
+  /* argument to be passed as `--numLocales=...`. If not specified, defaults to `--numLocales=1` */
+  numLocales?: string;
+
+  /* Arguments to be passed to the run command */
+  runArgs?: string[];
+
+  /* Use this compiler instead of the default one */
+  compiler?: string;
+
+  /* Arguments to be passed */
+  compileArgs?: string[];
+
+
+  /* Environment variables to be passed */
+  env?: { [key: string]: string };
+
+  /* The current working directory to use for compiling and running files. If not specified, the project root is used. */
+  cwd?: string;
+}
+
 
 type MasonCommand = "build" | "test" | "run";
 
@@ -87,9 +115,8 @@ interface MasonTaskDefinition extends vscode.TaskDefinition {
 
 
 const ChplBuildType = "chpl";
-// TODO: do we really need a special chpl-run? Why not just a normal 'process' task?
-// the only advantage this adds right now is the rootFile and numLocales properties
 const ChplRunType = "chpl-run";
+const ChplBuildAndRunType = "chpl-build-run";
 const MasonType = "mason";
 const ChplProblemMatcher = "$chpl-compiler";
 
@@ -124,7 +151,6 @@ function getBuildTaskFromDefinition(definition: ChplBuildTaskDefinition, oldTask
   task.group = vscode.TaskGroup.Build;
   return task;
 }
-
 function getRunTaskFromDefinition(definition: ChplRunTaskDefinition, oldTask?: vscode.Task): vscode.Task {
 
   const executable = definition.executable;
@@ -152,6 +178,48 @@ function getRunTaskFromDefinition(definition: ChplRunTaskDefinition, oldTask?: v
     execution,
     []
   );
+  return task;
+}
+function getBuildAndRunTaskFromDefinition(definition: ChplBuildAndRunTaskDefinition, oldTask?: vscode.Task): vscode.Task {
+
+  const chplCompiler = definition.compiler || getDefaultChplCompiler();
+  const compileArgs = definition.compileArgs || [];
+  const sourceFiles = definition.sourceFiles;
+  const executable = definition.executable;
+  const runArgs = definition.runArgs || [];
+  const numLocales = definition.numLocales || "1";
+  const cwd = definition.cwd || getWorkspaceFolder() || process.cwd();
+
+  const env = getEnv(definition);
+
+  let buildCommand = `${chplCompiler} ${sourceFiles.join(" ")} -o ${executable}`;
+  if (compileArgs.length > 0) {
+    buildCommand += ` ${compileArgs.join(" ")}`;
+  }
+  let runCommand = `${definition.executable} --numLocales=${numLocales}`;
+  if (runArgs.length > 0) {
+    runCommand += ` ${runArgs.join(" ")}`;
+  }
+  const execution = new vscode.ProcessExecution(
+    CONDITIONAL_BUILD_RUN,
+    [sourceFiles.join(";"), executable, buildCommand, runCommand],
+    {
+      cwd: cwd,
+      env: Object.fromEntries(env)
+    }
+  );
+  const fileBaseName = sourceFiles.length >= 1 ? path.basename(sourceFiles[0]) : path.basename(executable);
+  const name = oldTask?.name || `Build and Run ${fileBaseName}`;
+
+  const task = new vscode.Task(
+    definition,
+    oldTask?.scope || vscode.TaskScope.Workspace,
+    name,
+    ChplBuildAndRunType,
+    execution,
+    ChplProblemMatcher
+  );
+  task.group = vscode.TaskGroup.Build;
   return task;
 }
 
@@ -188,6 +256,10 @@ function getMasonTaskFromDefinition(definition: MasonTaskDefinition, oldTask?: v
 }
 
 async function getPerFileTasks(taskCreator: (filePath: string, outFile: string, cwd: string) => vscode.Task): Promise<vscode.Task[]> {
+
+  // TODO: if the workspace has a mason.toml file, we should not do this
+  // instead, we should have perFileTasks that use mason
+
   return vscode.workspace.findFiles("**/*.chpl").then((fileUris) => {
     const tasks: vscode.Task[] = [];
     const wsPath = getWorkspaceFolder();
@@ -206,23 +278,9 @@ async function getPerFileTasks(taskCreator: (filePath: string, outFile: string, 
 }
 
 class ChplBuildTaskProvider implements vscode.TaskProvider {
-  private providePromise: Thenable<vscode.Task[]> | undefined = undefined;
-
   public provideTasks(): Thenable<vscode.Task[]> | undefined {
-    if (!this.providePromise) {
-      const createBuildTask = (filePath: string, outFile: string, cwd: string) => {
-        const buildTask = getBuildTaskFromDefinition({
-          type: ChplBuildType,
-          rootFile: filePath,
-          args: [filePath, "-o", outFile],
-          cwd: cwd,
-          env: Object.fromEntries(getEnv())
-        });
-        return buildTask;
-      };
-      this.providePromise = getPerFileTasks(createBuildTask);
-    }
-    return this.providePromise;
+    // we provide no build tasks by default
+    return undefined;
   }
 
   public resolveTask(task: vscode.Task): vscode.Task | undefined {
@@ -236,25 +294,9 @@ class ChplBuildTaskProvider implements vscode.TaskProvider {
 }
 
 class ChplRunTaskProvider implements vscode.TaskProvider {
-  private providePromise: Thenable<vscode.Task[]> | undefined = undefined;
-
   public provideTasks(): Thenable<vscode.Task[]> | undefined {
-    if (!this.providePromise) {
-      const createRunTask = (filePath: string, outFile: string, cwd: string) => {
-        const runTask = getRunTaskFromDefinition({
-          type: ChplRunType,
-          rootFile: filePath,
-          executable: outFile,
-          numLocales: "1",
-          cwd: cwd,
-          args: [],
-          env: Object.fromEntries(getEnv())
-        });
-        return runTask;
-      };
-      this.providePromise = getPerFileTasks(createRunTask);
-    }
-    return this.providePromise;
+    // we provide no build tasks by default
+    return undefined;
   }
 
   public resolveTask(task: vscode.Task): vscode.Task | undefined {
@@ -267,31 +309,64 @@ class ChplRunTaskProvider implements vscode.TaskProvider {
   }
 }
 
-  async function InvokeTestFileTask(filename: string, filter: string | undefined = undefined, masonFile: string | undefined = undefined) {
-    if (!masonFile) {
-      masonFile = path.join(getWorkspaceFolder() || process.cwd(), "Mason.toml");
-    }
-    // if it exists, use the mason file to determine the right directory
-    const cwd = (fs.existsSync(masonFile)) ? path.dirname(masonFile) : (getWorkspaceFolder() || process.cwd());
+class ChplBuildAndRunTaskProvider implements vscode.TaskProvider {
+  private providePromise: Thenable<vscode.Task[]> | undefined = undefined;
 
-    const args: string[] = ["--show"];
-    if (filter) {
-      args.push(`--filter=${filter}`);
+  public provideTasks(): Thenable<vscode.Task[]> | undefined {
+    if (!this.providePromise) {
+      const createBuildAndRunTask = (filePath: string, outFile: string, cwd: string) => {
+        const buildAndRunTask = getBuildAndRunTaskFromDefinition({
+          type: ChplBuildAndRunType,
+          sourceFiles: [filePath],
+          executable: outFile,
+          numLocales: "1",
+          cwd: cwd,
+          compileArgs: [],
+          runArgs: [],
+          env: Object.fromEntries(getEnv())
+        });
+        return buildAndRunTask;
+      }
+      this.providePromise = getPerFileTasks(createBuildAndRunTask);
     }
-    args.push("--");
-    args.push(filename);
-
-    const masonEnv = MasonTaskProvider.GetMasonEnv();
-    const definition: MasonTaskDefinition = {
-      type: MasonType,
-      command: "test",
-      args: args,
-      cwd: cwd,
-      env: Object.fromEntries(masonEnv),
-    };
-    const task = getMasonTaskFromDefinition(definition);
-    await vscode.tasks.executeTask(task);
+    return this.providePromise;
   }
+
+  public resolveTask(task: vscode.Task): vscode.Task | undefined {
+    const definition = task.definition as ChplBuildAndRunTaskDefinition;
+    if (definition) {
+      const resolvedTask = getBuildAndRunTaskFromDefinition(definition, task);
+      return resolvedTask;
+    }
+    return undefined;
+  }
+}
+
+async function InvokeTestFileTask(filename: string, filter: string | undefined = undefined, masonFile: string | undefined = undefined) {
+  if (!masonFile) {
+    masonFile = path.join(getWorkspaceFolder() || process.cwd(), "Mason.toml");
+  }
+  // if it exists, use the mason file to determine the right directory
+  const cwd = (fs.existsSync(masonFile)) ? path.dirname(masonFile) : (getWorkspaceFolder() || process.cwd());
+
+  const args: string[] = ["--show"];
+  if (filter) {
+    args.push(`--filter=${filter}`);
+  }
+  args.push("--");
+  args.push(filename);
+
+  const masonEnv = MasonTaskProvider.GetMasonEnv();
+  const definition: MasonTaskDefinition = {
+    type: MasonType,
+    command: "test",
+    args: args,
+    cwd: cwd,
+    env: Object.fromEntries(masonEnv),
+  };
+  const task = getMasonTaskFromDefinition(definition);
+  await vscode.tasks.executeTask(task);
+}
 
 class MasonTaskProvider implements vscode.TaskProvider {
   private providePromise: Thenable<vscode.Task[]> | undefined = undefined;
@@ -370,18 +445,34 @@ async function chpl_runFileTask() {
       type: ChplBuildType,
     }), vscode.tasks.fetchTasks({
       type: ChplRunType,
+    }), vscode.tasks.fetchTasks({
+      type: ChplBuildAndRunType,
     })])).flat()
       .filter(task => {
-        const definition = task.definition as ChplBuildTaskDefinition | ChplRunTaskDefinition;
-
-        const rootFile = path.resolve(resolveWorkspaceFolder(wsPath, definition.rootFile || ""));
-        return rootFile === filePath;
+        if (task.definition.type === ChplBuildType || task.definition.type === ChplRunType) {
+          const definition = task.definition as (ChplBuildTaskDefinition | ChplRunTaskDefinition);
+          const rootFile = path.resolve(resolveWorkspaceFolder(wsPath, definition.rootFile || ""));
+          return rootFile === filePath;
+        } else if (task.definition.type === ChplBuildAndRunType) {
+          const definition = task.definition as ChplBuildAndRunTaskDefinition;
+          const sourceFiles = definition.sourceFiles.map(sourceFile => path.resolve(resolveWorkspaceFolder(wsPath, sourceFile)));
+          return sourceFiles.includes(filePath);
+        } else {
+          // should not occur
+          return false;
+        }
       });
 
   if (tasks.length === 0) {
     vscode.window.showErrorMessage("No tasks found for this file.");
     return;
   }
+
+  if (tasks.length === 1) {
+    await vscode.tasks.executeTask(tasks[0]);
+    return;
+  }
+
   const selectedTask = await vscode.window.showQuickPick(tasks.map(task => task.name), {
     placeHolder: "Select a task to run",
   });
@@ -412,6 +503,7 @@ export function registerChapelTaskProvider(context: vscode.ExtensionContext): vo
   context.subscriptions.push(
     vscode.tasks.registerTaskProvider(ChplRunType, new ChplRunTaskProvider()),
     vscode.tasks.registerTaskProvider(ChplBuildType, new ChplBuildTaskProvider()),
+    vscode.tasks.registerTaskProvider(ChplBuildAndRunType, new ChplBuildAndRunTaskProvider()),
     vscode.tasks.registerTaskProvider(MasonType, new MasonTaskProvider())
   );
 
