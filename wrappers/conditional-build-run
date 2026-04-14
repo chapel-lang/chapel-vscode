@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+
+# Conditional build wrapper for Chapel.
+# Usage: conditional-build-run <source-files> <executable> <build-command> <run-command>
+#
+# If <executable> does not exist, or <source-files> is newer than <executable>,
+# then <build-command> is executed (the build step) followed by <run-command>.
+# If <source-files> does not exist, the build is always run.
+# If <executable> does not exist, the build is always run.
+# no matter what, <run-command> is executed after the build step (if needed).
+
+if [ $# -ne 4 ]; then
+  echo "Usage: conditional-build-run <source-files> <executable> <build-command> <run-command>" >&2
+  exit 1
+fi
+
+# ; is used as a separator for the list of source files, so we need to replace it with a space for the `-nt` check and the build command
+source_files=$(echo "$1" | tr ';' ' ')
+executable="$2"
+build_command="$3"
+run_command="$4"
+
+needs_build=0
+
+if [ ! -f "$executable" ]; then
+  needs_build=1
+else
+  for source_file in $source_files; do
+    if [ ! -f "$source_file" ]; then
+      needs_build=1
+      break
+    elif [ "$source_file" -nt "$executable" ]; then
+      needs_build=1
+      break
+    fi
+  done
+fi
+
+if [ "$needs_build" -eq 1 ]; then
+  eval "$build_command"
+fi
+exec $run_command

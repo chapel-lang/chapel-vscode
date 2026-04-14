@@ -25,3 +25,4 @@ export const EXTENSION_ROOT_DIR = path.resolve(path.dirname(__dirname));
 export const WRAPPERS_DIR = path.join(EXTENSION_ROOT_DIR, "wrappers");
 export const CHPL_WRAPPER = path.join(WRAPPERS_DIR, "chpl");
 export const MASON_WRAPPER = path.join(WRAPPERS_DIR, "mason");
+export const CONDITIONAL_BUILD_RUN = path.join(WRAPPERS_DIR, "conditional-build-run");
