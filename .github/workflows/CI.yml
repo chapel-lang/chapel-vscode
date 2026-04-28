@@ -15,9 +15,15 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Install Node.js
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@v6
       with:
         node-version: ${{ matrix.node-version }}
+    - name: Use Latest NPM
+      run: |
+        # workaround https://github.com/nodejs/node/issues/62425#issuecomment-4200715930
+        npm install -g npm@10.9.8
+
+        npm install -g npm@latest
     - name: NPM install
       run: |
         npm ci
