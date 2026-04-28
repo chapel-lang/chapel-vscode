@@ -443,18 +443,23 @@
     "test": ""
   },
   "devDependencies": {
-    "@types/node": "18.x",
+    "@types/node": "20.x",
     "@types/vscode": "^1.70.0",
     "@typescript-eslint/eslint-plugin": "^8.3.5",
     "@typescript-eslint/parser": "^8.3.5",
     "@vscode/test-electron": "^2.3.6",
-    "@vscode/vsce": "^3.7.0",
+    "@vscode/vsce": "^3.9.1",
     "esbuild": "^0.25.12",
     "eslint": "^9.29.0",
-    "ovsx": "^0.10.4",
+    "ovsx": "^0.10.11",
     "typescript": "^5.2.2"
   },
   "dependencies": {
     "vscode-languageclient": "^8.0.2"
+  },
+  "overrides": {
+    "@vscode/vsce": {
+      "uuid": "^14.0.0"
+    }
   }
 }
