@@ -35,7 +35,7 @@ jobs:
         ARTIFACT_VER=$(sed "s/lts\/\*/lts-latest/g" <<< "${{ matrix.node-version }}")
         echo "PACKAGE_ARTIFACT_NAME=chapel-package-node${ARTIFACT_VER}.vsix" >> "$GITHUB_ENV"
     - name: upload package
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: ${{ env.PACKAGE_ARTIFACT_NAME }}
         path: bin/chapel.vsix
