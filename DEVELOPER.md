@@ -13,21 +13,20 @@ To build and test the extension locally in debug mode, you can use the
 Run/Debug tab to launch the extension in a new VSCode window (or press `F5`).
 
 For some debugging purposes, it may be useful to build a local binary of the
-extension using `vsce`. To do this, run `npx vsce package -o bin/chapel.vsix`
-from the root of the repository. This can then be installed in VSCode by
-selecting "Install from VSIX" in the Extensions view, or by running `code
---install-extension bin/chapel.vsix`.
+extension using `vsce`. To do this, run
+`mkdir -p bin && npx vsce package -o bin/chapel.vsix` from the root of the
+repository.
 
 ## Installing locally
 
-It may be useful to install the extension locally for testing purposes. To do
-this, you can use the `code` command line tool. First, build the extension as
-described above, then run `code --install-extension bin/chapel.vsix` to install
-it.
+A local build of the extension can be installed in VSCode for testing purposes.
+This can then be installed in VSCode by selecting "Install from VSIX" in the
+Extensions view, or by running `code --install-extension bin/chapel.vsix` (if
+you have the command line installed).
 
 You can also download a prebuilt version of the extension from the CI. Opening
 any CI run, in the "upload package" step, you can find a link to download the
-`chapel.vsix` file. You can then install it using the same command as above.
+`chapel.vsix` file. You can then install it the same way as above.
 
 
 ## Publishing the extension
