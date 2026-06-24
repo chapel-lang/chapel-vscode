@@ -5,6 +5,10 @@ extension for Visual Studio Code.
 
 ## Building locally
 
+If you are building the extension locally, you will need to have Node.js and
+npm installed. Then, you can install the dependencies by running `npm install
+.` from the root of the repository.
+
 To build and test the extension locally in debug mode, you can use the
 Run/Debug tab to launch the extension in a new VSCode window (or press `F5`).
 
