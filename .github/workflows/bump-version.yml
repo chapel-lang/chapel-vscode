@@ -31,7 +31,6 @@ jobs:
         git push --set-upstream origin update-version
     - name: Bump Version
       run: |
-        npm ci
         npm version patch
         git push
     - name: create pull request
