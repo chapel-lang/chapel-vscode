@@ -136,6 +136,12 @@
         "title": "mason test",
         "category": "mason",
         "icon": "$(beaker)"
+      },
+      {
+        "command": "chapel.searchDocs",
+        "title": "Search Chapel Documentation",
+        "category": "chapel",
+        "icon": "$(search)"
       }
     ],
     "menus": {
