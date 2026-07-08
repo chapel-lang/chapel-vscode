@@ -4,7 +4,7 @@
   "description": "A collection of development tools for programming in Chapel",
   "version": "0.0.21",
   "engines": {
-    "vscode": "^1.70.0"
+    "vscode": "^1.104.0"
   },
   "publisher": "chpl-hpe",
   "author": {
@@ -460,7 +460,7 @@
   },
   "devDependencies": {
     "@types/node": "20.x",
-    "@types/vscode": "^1.70.0",
+    "@types/vscode": "^1.104.0",
     "@typescript-eslint/eslint-plugin": "^8.3.5",
     "@typescript-eslint/parser": "^8.3.5",
     "@vscode/test-electron": "^2.3.6",
