@@ -121,6 +121,22 @@ export function activate(context: vscode.ExtensionContext) {
     })
   );
 
+  context.subscriptions.push(
+    vscode.commands.registerCommand("chapel.searchDocs", async () => {
+      const keyword = await vscode.window.showInputBox({
+        placeHolder: "Enter a keyword to search the Chapel documentation",
+        prompt: "Search Chapel Documentation",
+      });
+      if (keyword === undefined || keyword === "") {
+        return;
+      }
+      const url = `https://chapel-lang.org/docs/search.html?q=${encodeURIComponent(
+        keyword
+      )}&check_keywords=yes&area=default#`;
+      await vscode.commands.executeCommand("simpleBrowser.show", url);
+    })
+  );
+
   chplcheckClient = new ChplCheckClient(
     getChplCheckConfig(),
     "chplcheck",
