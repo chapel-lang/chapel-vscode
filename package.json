@@ -428,7 +428,23 @@
       "[chapel]": {
         "editor.semanticHighlighting.enabled": true
       }
-    }
+    },
+    "chatInstructions": [
+      {
+        "path": "./instructions/mason-UnitTest.instructions.md"
+      }
+    ],
+    "chatSkills": [
+      {
+        "path": "./skills/chapel-mason-test/SKILL.md"
+      },
+      {
+        "path": "./skills/chapel-mason-build/SKILL.md"
+      },
+      {
+        "path": "./skills/chapel-mason-run/SKILL.md"
+      }
+    ]
   },
   "scripts": {
     "watch": "npm-run-all -p watch:*",
