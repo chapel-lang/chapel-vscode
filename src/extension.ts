@@ -30,10 +30,16 @@ import { registerDebugCommands } from "./debug";
 import * as fs from "fs";
 import { registerChapelTaskProvider } from "./task";
 import { ChplTerminalLinkProvider } from "./TerminalLinks";
+import { RESTART_DEBOUNCE_MS } from "./constants";
 
 let chplcheckClient: ChplCheckClient;
 let clsClient: CLSClient;
 export let logger: vscode.LogOutputChannel;
+
+export interface ChapelExtensionApi {
+  chplcheck: ChplCheckClient;
+  cls: CLSClient;
+}
 
 export function showInvalidPathWarning(
   tool: string,
@@ -105,7 +111,7 @@ function selectChplHome(choices: string[]) {
     });
 }
 
-export function activate(context: vscode.ExtensionContext) {
+export function activate(context: vscode.ExtensionContext): ChapelExtensionApi {
   logger = vscode.window.createOutputChannel("chapel", { log: true });
   logger.info("Chapel extension activated");
 
@@ -177,7 +183,7 @@ export function activate(context: vscode.ExtensionContext) {
             chplcheckClient.resetConfig(getChplCheckConfig()),
             clsClient.resetConfig(getCLSConfig()),
           ]);
-        }, 5000);
+        }, RESTART_DEBOUNCE_MS);
       }
     })
   );
@@ -196,7 +202,7 @@ export function activate(context: vscode.ExtensionContext) {
       logger.debug("Restarting language server due to .cls-commands.json change");
       await clsClient.stop();
       await clsClient.start();
-    }, 5000);
+    }, RESTART_DEBOUNCE_MS);
   });
 
   const masonCommandWatcher = vscode.workspace.createFileSystemWatcher(
@@ -213,7 +219,7 @@ export function activate(context: vscode.ExtensionContext) {
       logger.debug("Restarting language server due to Mason.toml or Mason.lock change");
       await clsClient.stop();
       await clsClient.start();
-    }, 5000);
+    }, RESTART_DEBOUNCE_MS);
   });
 
   // Start the language server once the user opens the first text document
@@ -229,6 +235,7 @@ export function activate(context: vscode.ExtensionContext) {
   registerDebugCommands(context);
   registerChapelTaskProvider(context);
 
+  return { chplcheck: chplcheckClient, cls: clsClient };
 }
 
 export function deactivate() {
