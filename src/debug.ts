@@ -21,6 +21,7 @@
 import * as vscode from "vscode";
 import { getPreferredDebugProvider } from "./configuration";
 import { getEnvAffectingChapel } from "./ChplPaths";
+import { mergeEnvPreferUser, parseArgsInput, parseEnvInput } from "./util/debugInput";
 
 export function registerDebugCommands(context: vscode.ExtensionContext) {
   context.subscriptions.push(
@@ -140,27 +141,13 @@ async function getArgsAndEnv() {
   // on commas inside of quotes
 
   const args = await vscode.window.showInputBox({ placeHolder: "Enter the arguments to pass to the executable (comma separated)" });
-  const argsArray = args ? args.split(",").map((arg: string) => arg.trim()) : [];
+  const argsArray = parseArgsInput(args);
 
   const env = await vscode.window.showInputBox({ placeHolder: "Enter the environment variables to set (key=value, comma separated)" });
-  const envMap = new Map<string, string>();
-  if (env) {
-    const envArray = env.split(",").map((envVar: string) => envVar.trim());
-    for (const envVar of envArray) {
-      const [key, value] = envVar.split("=");
-      if (key && value) {
-        envMap.set(key.trim(), value.trim());
-      }
-    }
-  }
+  const envMap = parseEnvInput(env);
 
-  const baseEnv = getEnvAffectingChapel();
   // merge the base env with the user provided env, prefer user provided env
-  for (const [key, value] of baseEnv) {
-    if (!envMap.has(key)) {
-      envMap.set(key, value);
-    }
-  }
+  mergeEnvPreferUser(envMap, getEnvAffectingChapel());
 
   return { argsArray, envMap };
 }
