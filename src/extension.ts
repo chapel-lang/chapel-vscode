@@ -30,56 +30,15 @@ import { registerDebugCommands } from "./debug";
 import * as fs from "fs";
 import { registerChapelTaskProvider } from "./task";
 import { ChplTerminalLinkProvider } from "./TerminalLinks";
+import { createLogger } from "./logger";
 import { RESTART_DEBOUNCE_MS } from "./constants";
 
 let chplcheckClient: ChplCheckClient;
 let clsClient: CLSClient;
-export let logger: vscode.LogOutputChannel;
 
 export interface ChapelExtensionApi {
   chplcheck: ChplCheckClient;
   cls: CLSClient;
-}
-
-export function showInvalidPathWarning(
-  tool: string,
-  path: string,
-  errorString?: string
-) {
-  if (errorString) {
-    logger.warn(errorString);
-  }
-
-  let msg = `The path '${path}' for ${tool} is invalid, errors may occur. Please double check that this is the correct path.`;
-  if (path === "") {
-    msg = `The path for ${tool} is not set, errors may occur. Please either set the path or remove the empty path.`;
-  }
-
-  vscode.window.showWarningMessage(msg, "Show Log", "Ok").then((value) => {
-    if (value === "Show Log") {
-      logger.show();
-    }
-  });
-}
-
-export function showChplHomeMissingError(errorString?: string) {
-  if (errorString) {
-    logger.error(errorString);
-  }
-  vscode.window
-    .showErrorMessage(
-      "CHPL_HOME is incorrect, make sure the path is correct",
-      "Find CHPL_HOME",
-      "Show Log",
-      "Ok"
-    )
-    .then((value) => {
-      if (value === "Find CHPL_HOME") {
-        vscode.commands.executeCommand("chapel.findChplHome");
-      } else if (value === "Show Log") {
-        logger.show();
-      }
-    });
 }
 
 function pickMyOwnChplHome() {
@@ -112,7 +71,7 @@ function selectChplHome(choices: string[]) {
 }
 
 export function activate(context: vscode.ExtensionContext): ChapelExtensionApi {
-  logger = vscode.window.createOutputChannel("chapel", { log: true });
+  const logger = createLogger();
   logger.info("Chapel extension activated");
 
   context.subscriptions.push(
