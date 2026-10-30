@@ -31,7 +31,7 @@ import {
   getWorkspaceFolder,
   getDefaultMason,
 } from "./ChplPaths";
-import { showChplHomeMissingError } from "./extension";
+import { showChplHomeMissingError } from "./messages";
 import * as path from "path";
 
 function getToolVersion(logger: vscode.LogOutputChannel, toolPath: string, env: NodeJS.ProcessEnv): string | undefined {
