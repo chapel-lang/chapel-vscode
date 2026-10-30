@@ -20,7 +20,7 @@
 import * as vscode from "vscode";
 import * as fs from "fs";
 import { getChplHome } from "./configuration";
-import { logger } from "./extension";
+import { logger } from "./logger";
 
 export class ChplLink implements vscode.TerminalLink {
   startIndex: number;
