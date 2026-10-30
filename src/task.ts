@@ -25,6 +25,7 @@ import { getDefaultChplCompiler, getEnvAffectingChapel, getDefaultMason } from "
 import { CONDITIONAL_BUILD_RUN } from "./constants";
 import { logger } from "./logger";
 import { replaceWithWorkspaceFolder, resolveWorkspaceFolder } from "./util/workspacePaths";
+import { buildRunWrapperArgs, masonTestFileArgs, runTaskArgs } from "./util/taskCommands";
 
 
 
@@ -162,7 +163,7 @@ function getRunTaskFromDefinition(definition: ChplRunTaskDefinition, oldTask?: v
 
   const execution = new vscode.ProcessExecution(
     executable,
-    [`--numLocales=${numLocales}`, ...args],
+    runTaskArgs(numLocales, args),
     {
       cwd: cwd,
       env: Object.fromEntries(env)
@@ -193,17 +194,16 @@ function getBuildAndRunTaskFromDefinition(definition: ChplBuildAndRunTaskDefinit
 
   const env = getEnv(definition);
 
-  let buildCommand = `${chplCompiler} ${sourceFiles.join(" ")} -o ${executable}`;
-  if (compileArgs.length > 0) {
-    buildCommand += ` ${compileArgs.join(" ")}`;
-  }
-  let runCommand = `${definition.executable} --numLocales=${numLocales}`;
-  if (runArgs.length > 0) {
-    runCommand += ` ${runArgs.join(" ")}`;
-  }
   const execution = new vscode.ProcessExecution(
     CONDITIONAL_BUILD_RUN,
-    [sourceFiles.join(";"), executable, buildCommand, runCommand],
+    buildRunWrapperArgs({
+      compiler: chplCompiler,
+      sourceFiles: sourceFiles,
+      executable: executable,
+      compileArgs: compileArgs,
+      numLocales: numLocales,
+      runArgs: runArgs,
+    }),
     {
       cwd: cwd,
       env: Object.fromEntries(env)
@@ -350,12 +350,7 @@ async function InvokeTestFileTask(filename: string, filter: string | undefined =
   // if it exists, use the mason file to determine the right directory
   const cwd = (fs.existsSync(masonFile)) ? path.dirname(masonFile) : (getWorkspaceFolder() || process.cwd());
 
-  const args: string[] = ["--show"];
-  if (filter) {
-    args.push(`--filter=${filter}`);
-  }
-  args.push("--");
-  args.push(filename);
+  const args = masonTestFileArgs(filename, filter);
 
   const masonEnv = MasonTaskProvider.GetMasonEnv();
   const definition: MasonTaskDefinition = {
