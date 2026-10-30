@@ -24,6 +24,7 @@ import * as fs from "fs";
 import { getDefaultChplCompiler, getEnvAffectingChapel, getDefaultMason } from "./ChplPaths";
 import { CONDITIONAL_BUILD_RUN } from "./constants";
 import { logger } from "./logger";
+import { replaceWithWorkspaceFolder, resolveWorkspaceFolder } from "./util/workspacePaths";
 
 
 
@@ -529,23 +530,6 @@ function getEnv(def: ChplBuildTaskDefinition | ChplRunTaskDefinition | MasonTask
     }
   }
   return envMap;
-}
-
-function replaceWithWorkspaceFolder(wsPath: string | undefined, filePath: string): string {
-  if (wsPath) {
-    if (filePath.startsWith(`${wsPath}/`)) {
-      return filePath.replace(wsPath, "${workspaceFolder}");
-    } else if (filePath === wsPath) {
-      return "${workspaceFolder}";
-    }
-  }
-  return filePath;
-}
-function resolveWorkspaceFolder(wsPath: string | undefined, filePath: string): string {
-  if (wsPath && filePath.includes("${workspaceFolder}")) {
-    return filePath.replace("${workspaceFolder}", wsPath);
-  }
-  return filePath;
 }
 
 // TODO: this function will need reworking to properly work with multi-root workspaces
