@@ -30,50 +30,15 @@ import { registerDebugCommands } from "./debug";
 import * as fs from "fs";
 import { registerChapelTaskProvider } from "./task";
 import { ChplTerminalLinkProvider } from "./TerminalLinks";
+import { createLogger } from "./logger";
+import { RESTART_DEBOUNCE_MS } from "./constants";
 
 let chplcheckClient: ChplCheckClient;
 let clsClient: CLSClient;
-export let logger: vscode.LogOutputChannel;
 
-export function showInvalidPathWarning(
-  tool: string,
-  path: string,
-  errorString?: string
-) {
-  if (errorString) {
-    logger.warn(errorString);
-  }
-
-  let msg = `The path '${path}' for ${tool} is invalid, errors may occur. Please double check that this is the correct path.`;
-  if (path === "") {
-    msg = `The path for ${tool} is not set, errors may occur. Please either set the path or remove the empty path.`;
-  }
-
-  vscode.window.showWarningMessage(msg, "Show Log", "Ok").then((value) => {
-    if (value === "Show Log") {
-      logger.show();
-    }
-  });
-}
-
-export function showChplHomeMissingError(errorString?: string) {
-  if (errorString) {
-    logger.error(errorString);
-  }
-  vscode.window
-    .showErrorMessage(
-      "CHPL_HOME is incorrect, make sure the path is correct",
-      "Find CHPL_HOME",
-      "Show Log",
-      "Ok"
-    )
-    .then((value) => {
-      if (value === "Find CHPL_HOME") {
-        vscode.commands.executeCommand("chapel.findChplHome");
-      } else if (value === "Show Log") {
-        logger.show();
-      }
-    });
+export interface ChapelExtensionApi {
+  chplcheck: ChplCheckClient;
+  cls: CLSClient;
 }
 
 function pickMyOwnChplHome() {
@@ -105,8 +70,8 @@ function selectChplHome(choices: string[]) {
     });
 }
 
-export function activate(context: vscode.ExtensionContext) {
-  logger = vscode.window.createOutputChannel("chapel", { log: true });
+export function activate(context: vscode.ExtensionContext): ChapelExtensionApi {
+  const logger = createLogger();
   logger.info("Chapel extension activated");
 
   context.subscriptions.push(
@@ -177,7 +142,7 @@ export function activate(context: vscode.ExtensionContext) {
             chplcheckClient.resetConfig(getChplCheckConfig()),
             clsClient.resetConfig(getCLSConfig()),
           ]);
-        }, 5000);
+        }, RESTART_DEBOUNCE_MS);
       }
     })
   );
@@ -196,7 +161,7 @@ export function activate(context: vscode.ExtensionContext) {
       logger.debug("Restarting language server due to .cls-commands.json change");
       await clsClient.stop();
       await clsClient.start();
-    }, 5000);
+    }, RESTART_DEBOUNCE_MS);
   });
 
   const masonCommandWatcher = vscode.workspace.createFileSystemWatcher(
@@ -213,7 +178,7 @@ export function activate(context: vscode.ExtensionContext) {
       logger.debug("Restarting language server due to Mason.toml or Mason.lock change");
       await clsClient.stop();
       await clsClient.start();
-    }, 5000);
+    }, RESTART_DEBOUNCE_MS);
   });
 
   // Start the language server once the user opens the first text document
@@ -229,6 +194,7 @@ export function activate(context: vscode.ExtensionContext) {
   registerDebugCommands(context);
   registerChapelTaskProvider(context);
 
+  return { chplcheck: chplcheckClient, cls: clsClient };
 }
 
 export function deactivate() {
