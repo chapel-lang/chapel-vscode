@@ -23,7 +23,7 @@ import * as path from "path";
 import * as fs from "fs";
 import { getDefaultChplCompiler, getEnvAffectingChapel, getDefaultMason } from "./ChplPaths";
 import { CONDITIONAL_BUILD_RUN } from "./constants";
-import { logger } from "./extension";
+import { logger } from "./logger";
 
 
 
