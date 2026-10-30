@@ -21,7 +21,6 @@ import * as path from "path";
 import * as fs from "fs";
 import * as vscode from "vscode";
 import * as cfg from "./configuration";
-import { showInvalidPathWarning } from "./extension";
 import assert from "assert";
 import { CHPL_WRAPPER, MASON_WRAPPER } from "./constants";
 
