@@ -22,6 +22,7 @@ import * as vscode from "vscode";
 import { getPreferredDebugProvider } from "./configuration";
 import { getEnvAffectingChapel } from "./ChplPaths";
 import { mergeEnvPreferUser, parseArgsInput, parseEnvInput } from "./util/debugInput";
+import { createCppdbgDebugConfig, createLLDBDebugConfig, executablePathsForFile } from "./util/debugConfigs";
 
 export function registerDebugCommands(context: vscode.ExtensionContext) {
   context.subscriptions.push(
@@ -75,26 +76,19 @@ async function chapel_createDebugConfigForActiveFile() {
     vscode.window.showErrorMessage("The current file is not a Chapel file.");
     return;
   }
-  const executablePath = document.fileName?.split(".").slice(0, -1).join(".");
-  if (!executablePath) {
+  const wsPath = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+  const paths = executablePathsForFile(document.fileName, wsPath);
+  if (!paths) {
     vscode.window.showErrorMessage("Failed to get the file name.");
     return;
   }
-  const wsPath = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
   if (!wsPath) {
     vscode.window.showErrorMessage("No workspace folder found.");
-  }
-  let executableNiceName: string = executablePath.split("/").pop() || executablePath;
-  let executableRelPath: string = executablePath;
-  if (wsPath) {
-    // determine executableRelPath to wsPath
-    executableNiceName = executablePath.replace(wsPath + "/", "");
-    executableRelPath = "${workspaceFolder}/" + executableNiceName;
   }
 
   const { argsArray, envMap } = await getArgsAndEnv();
 
-  const newConfig = provider.createDebugConfig(`Debug ${executableNiceName}`, executableRelPath, argsArray, envMap);
+  const newConfig = provider.createDebugConfig(`Debug ${paths.niceName}`, paths.relPath, argsArray, envMap);
   await saveConfig(newConfig);
 }
 
@@ -178,16 +172,7 @@ class DebugProviderCodeLLDB implements DebugProvider {
     return extension !== undefined;
   }
   createDebugConfig(name: string, executable: string, args: string[] = [], env: Map<string, string> = new Map()): vscode.DebugConfiguration {
-    return {
-      name: name,
-      type: this.type,
-      request: "launch",
-      program: executable,
-      cwd: "${workspaceFolder}",
-      args: args,
-      env: Object.fromEntries(env),
-      sourceLanguages: ["chapel"],
-    };
+    return createLLDBDebugConfig(name, executable, args, env);
   }
 }
 class CXXDebugProvider implements DebugProvider {
@@ -207,22 +192,7 @@ class CXXDebugProvider implements DebugProvider {
     return extension !== undefined;
   }
   createDebugConfig(name: string, executable: string, args: string[] = [], env: Map<string, string> = new Map()): vscode.DebugConfiguration {
-    return {
-      name: name,
-      type: this.type,
-      request: "launch",
-      program: executable,
-      cwd: "${workspaceFolder}",
-      args: args,
-      environment: [...Array.from(env.entries()).map(([key, value]) => ({ name: key, value: value }))],
-      stopAtEntry: false,
-      linux: {
-        MIMode: "gdb",
-      },
-      osx: {
-        MIMode: "lldb",
-      },
-    };
+    return createCppdbgDebugConfig(name, executable, args, env);
   }
 }
 
