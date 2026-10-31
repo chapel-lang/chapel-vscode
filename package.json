@@ -469,7 +469,8 @@
     "pretest:integration": "npm run compile && npm run compile-tests && node test/scripts/prepare-workspaces.mjs",
     "test:integration": "vscode-test --label integration-basic --label integration-cls-commands --label integration-mason",
     "test:wrappers": "bats test/wrappers",
-    "test": "npm run test:node && npm run test:wrappers && npm run test:vscode"
+    "test:grammar": "vscode-tmgrammar-test \"test/grammar/*.test.chpl\" && vscode-tmgrammar-snap \"test/grammar/snap/*.ast\"",
+    "test": "npm run test:node && npm run test:grammar && npm run test:wrappers && npm run test:vscode"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.10",
@@ -488,7 +489,8 @@
     "jsonc-parser": "^3.3.1",
     "mocha": "^12.0.3",
     "ovsx": "^0.10.11",
-    "typescript": "^5.2.2"
+    "typescript": "^5.2.2",
+    "vscode-tmgrammar-test": "^0.1.3"
   },
   "dependencies": {
     "vscode-languageclient": "^8.0.2"
