@@ -1,5 +1,6 @@
 import { defineConfig } from "@vscode/test-cli";
 import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 
 const pkg = JSON.parse(readFileSync(new URL("./package.json", import.meta.url), "utf8"));
 const minVersion = pkg.engines.vscode.replace(/^\^/, "");
@@ -14,7 +15,11 @@ const unit = {
   files: "out/test/vscode/unit/**/*.test.js",
   workspaceFolder: "out/test-workspaces/basic",
   launchArgs,
-  env: { CHAPEL_VSCODE_RESTART_DEBOUNCE_MS: "200" },
+  env: {
+    CHAPEL_VSCODE_RESTART_DEBOUNCE_MS: "200",
+    // Created empty by test/scripts/prepare-workspaces.mjs
+    FAKE_LSP_RECORD_DIR: fileURLToPath(new URL("./out/fake-lsp-records", import.meta.url)),
+  },
   mocha: { ui: "bdd", timeout: 20000 },
 };
 

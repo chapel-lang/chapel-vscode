@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+export FAKE_LSP_SHIM="$0"
+exec node "$(dirname "$0")/fake-lsp.js" chpl-language-server "$@"
