@@ -26,6 +26,7 @@ jobs:
       run: |
         npm run pretest
         npm run test:node
+        npm run test:grammar
     - name: Test packaging
       run: |
         mkdir -p bin
