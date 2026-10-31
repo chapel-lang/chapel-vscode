@@ -466,6 +466,8 @@
     "test:node": "npm run compile-tests && mocha \"out/test/node/**/*.test.js\"",
     "pretest:vscode": "npm run compile && npm run compile-tests && node test/scripts/prepare-workspaces.mjs",
     "test:vscode": "vscode-test --label unit",
+    "pretest:integration": "npm run compile && npm run compile-tests && node test/scripts/prepare-workspaces.mjs",
+    "test:integration": "vscode-test --label integration-basic --label integration-cls-commands --label integration-mason",
     "test": "npm run test:node && npm run test:vscode"
   },
   "devDependencies": {
