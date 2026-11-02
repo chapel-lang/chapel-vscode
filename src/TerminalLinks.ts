@@ -20,7 +20,8 @@
 import * as vscode from "vscode";
 import * as fs from "fs";
 import { getChplHome } from "./configuration";
-import { logger } from "./extension";
+import { logger } from "./logger";
+import { parseChplHomeLink } from "./util/terminalLinks";
 
 export class ChplLink implements vscode.TerminalLink {
   startIndex: number;
@@ -34,34 +35,19 @@ export class ChplLink implements vscode.TerminalLink {
   }
 }
 
-const optionalLineCol = "(?::(\\d+)(?::(\\d+))?)?";
-const linePattern = new RegExp("(\\$CHPL_HOME[^\\s:]+)" + optionalLineCol);
-
 // a terminal link provider to handle links like $CHPL_HOME/...
 export class ChplTerminalLinkProvider implements vscode.TerminalLinkProvider {
   provideTerminalLinks(context: vscode.TerminalLinkContext, _token: vscode.CancellationToken): vscode.ProviderResult<ChplLink[]> {
-    const line = context.line;
-
-    const match = linePattern.exec(line);
-    if (!match) {
+    const chplHome = getChplHome();
+    const parsed = parseChplHomeLink(context.line, chplHome);
+    if (!parsed) {
       return [];
     }
 
-    let path = match[1];
-    const lineNumStr = match[2];
-    const lineNum = lineNumStr ? parseInt(lineNumStr) : -1;
-    logger.debug(`Found terminal link: ${path} at line ${lineNum}`);
-
-    const startIndex = match.index;
-    const length = match[0].length;
+    const { startIndex, length, path, lineNum } = parsed;
+    logger.debug(`Found terminal link at line ${lineNum}`);
     logger.debug(`Link startIndex: ${startIndex}, length: ${length}`);
-
-    // resolve the CHPL_HOME
-    const chplHome = getChplHome();
     logger.debug(`Resolving $CHPL_HOME to ${chplHome}`);
-    if (chplHome && chplHome !== "") {
-      path = path.replace("$CHPL_HOME", chplHome);
-    }
     logger.debug(`Resolved terminal link path: ${path}`);
 
     const termLink = new ChplLink(startIndex, length, path, lineNum);
