@@ -465,7 +465,7 @@
     "compile-tests": "tsc -p test/tsconfig.json",
     "test:node": "npm run compile-tests && mocha \"out/test/node/**/*.test.js\"",
     "pretest:vscode": "npm run compile && npm run compile-tests && node test/scripts/prepare-workspaces.mjs",
-    "test:vscode": "vscode-test --label unit",
+    "test:vscode": "vscode-test --label unit --label unit-startup --label unit-no-folder",
     "pretest:integration": "npm run compile && npm run compile-tests && node test/scripts/prepare-workspaces.mjs",
     "test:integration": "vscode-test --label integration-basic --label integration-cls-commands --label integration-mason",
     "test:wrappers": "bats test/wrappers",
