@@ -23,6 +23,26 @@ const unit = {
   mocha: { ui: "bdd", timeout: 20000 },
 };
 
+const absPath = (rel) => fileURLToPath(new URL(rel, import.meta.url));
+
+// Opens hello.chpl at startup, in a workspace that enables the fake servers
+const unitStartup = {
+  ...unit,
+  files: "out/test/vscode/startup/**/*.test.js",
+  workspaceFolder: "out/test-workspaces/startup",
+  launchArgs: [...launchArgs, absPath("./out/test-workspaces/startup/hello.chpl")],
+};
+
+// An empty window, with the fake server settings in a user data dir made by
+// prepare-workspaces.mjs. Its path is as long as the default .vscode-test/user-data
+// because macOS limits the IPC socket path inside it to 103 chars.
+const unitNoFolder = {
+  ...unit,
+  files: "out/test/vscode/noFolder/**/*.test.js",
+  workspaceFolder: undefined,
+  launchArgs: [...launchArgs, `--user-data-dir=${absPath("./.vscode-test/no-folder")}`],
+};
+
 // Integration tests run the real chplcheck and chpl-language-server from PATH.
 function integration(label, workspace, dir) {
   return {
@@ -38,6 +58,8 @@ function integration(label, workspace, dir) {
 export default defineConfig([
   { label: "unit", ...unit },
   { label: "unit-min-engine", version: minVersion, ...unit },
+  { label: "unit-startup", ...unitStartup },
+  { label: "unit-no-folder", ...unitNoFolder },
   integration("integration-basic", "integration", "basic"),
   integration("integration-cls-commands", "cls-commands", "clsCommands"),
   integration("integration-mason", "mason-project", "mason"),
