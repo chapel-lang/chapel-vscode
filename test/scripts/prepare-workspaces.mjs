@@ -34,7 +34,54 @@ const userData = path.join(root, ".vscode-test", "no-folder");
 rmSync(userData, { recursive: true, force: true });
 writeSettings(path.join(userData, "User"));
 
-// Fake language servers record their argv and env here (see .vscode-test.mjs).
-const records = path.join(root, "out", "fake-lsp-records");
-rmSync(records, { recursive: true, force: true });
-mkdirSync(records, { recursive: true });
+// unit-mason: the fake chpl and mason, with both language servers disabled
+const noServers = {
+  "chapel.chplcheck.enable": false,
+  "chapel.chpl-language-server.enable": false,
+};
+const fakeBuildSettings = {
+  ...noServers,
+  "chapel.defaultCompiler": path.join(fakeTools, "chpl"),
+  "chapel.defaultMason": path.join(fakeTools, "mason"),
+};
+const masonSettings = path.join(dest, "mason-fake", ".vscode");
+mkdirSync(masonSettings, { recursive: true });
+writeFileSync(path.join(masonSettings, "settings.json"), JSON.stringify(fakeBuildSettings, undefined, 2));
+
+// unit-tasks: provided tasks are computed once, so these must exist before startup
+const tasksSettings = path.join(dest, "tasks", ".vscode");
+mkdirSync(tasksSettings, { recursive: true });
+writeFileSync(path.join(tasksSettings, "settings.json"), JSON.stringify({
+  ...fakeBuildSettings,
+  "chapel.baseEnv": { TEST_ENV_BASE: "baseEnv", TEST_ENV_TASK: "baseEnv" },
+}, undefined, 2));
+writeFileSync(path.join(tasksSettings, "tasks.json"), JSON.stringify({
+  version: "2.0.0",
+  tasks: [
+    {
+      type: "chpl-build-run",
+      label: "build and run envcheck from tasks.json",
+      sourceFiles: ["${workspaceFolder}/envcheck.chpl"],
+      executable: "${workspaceFolder}/envcheck",
+      env: { TEST_ENV_TASK: "task" },
+    },
+    {
+      type: "chpl-run",
+      label: "run fake program from tasks.json",
+      executable: path.join(fakeTools, "fake-program"),
+    },
+    {
+      type: "chpl",
+      label: "compile picked.chpl from tasks.json",
+      rootFile: "${workspaceFolder}/picked.chpl",
+      args: ["${workspaceFolder}/picked.chpl", "-o", "${workspaceFolder}/picked-from-tasks-json"],
+    },
+  ],
+}, undefined, 2));
+
+// Fake language servers and build tools record their argv and env here (see .vscode-test.mjs).
+for (const dir of ["fake-lsp-records", "fake-tool-records"]) {
+  const records = path.join(root, "out", dir);
+  rmSync(records, { recursive: true, force: true });
+  mkdirSync(records, { recursive: true });
+}

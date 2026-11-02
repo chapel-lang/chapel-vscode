@@ -465,7 +465,7 @@
     "compile-tests": "tsc -p test/tsconfig.json",
     "test:node": "npm run compile-tests && mocha \"out/test/node/**/*.test.js\"",
     "pretest:vscode": "npm run compile && npm run compile-tests && node test/scripts/prepare-workspaces.mjs",
-    "test:vscode": "vscode-test --label unit --label unit-startup --label unit-no-folder",
+    "test:vscode": "vscode-test --label unit --label unit-startup --label unit-no-folder --label unit-mason --label unit-tasks",
     "pretest:integration": "npm run compile && npm run compile-tests && node test/scripts/prepare-workspaces.mjs",
     "test:integration": "vscode-test --label integration-basic --label integration-cls-commands --label integration-mason",
     "test:wrappers": "bats test/wrappers",
@@ -475,6 +475,7 @@
   "devDependencies": {
     "@types/mocha": "^10.0.10",
     "@types/node": "20.x",
+    "@types/sinon": "^22.0.2",
     "@types/vscode": "^1.104.0",
     "@typescript-eslint/eslint-plugin": "^8.3.5",
     "@typescript-eslint/parser": "^8.3.5",
@@ -489,6 +490,7 @@
     "jsonc-parser": "^3.3.1",
     "mocha": "^12.0.3",
     "ovsx": "^0.10.11",
+    "sinon": "^22.1.0",
     "typescript": "^5.2.2",
     "vscode-languageserver": "^8.1.0",
     "vscode-tmgrammar-test": "^0.1.3"
