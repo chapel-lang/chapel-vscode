@@ -74,7 +74,7 @@ jobs:
       fail-fast: false
       matrix:
         # unit-min-engine runs against the minimum VS Code version in package.json
-        label: [unit, unit-min-engine]
+        label: [unit, unit-min-engine, unit-startup, unit-no-folder]
     steps:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
     - name: Install Node.js
