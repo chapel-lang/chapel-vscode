@@ -31,7 +31,8 @@ import {
   getWorkspaceFolder,
   getDefaultMason,
 } from "./ChplPaths";
-import { showChplHomeMissingError } from "./extension";
+import { showChplHomeMissingError } from "./messages";
+import { meetsMinVersion, parseToolVersion } from "./util/version";
 import * as path from "path";
 
 function getToolVersion(logger: vscode.LogOutputChannel, toolPath: string, env: NodeJS.ProcessEnv): string | undefined {
@@ -41,24 +42,11 @@ function getToolVersion(logger: vscode.LogOutputChannel, toolPath: string, env: 
       encoding: "utf-8",
       env: env,
     });
-    const match = output.match(/(\d+\.\d+\.\d+)/);
-    return match ? match[1] : undefined;
+    return parseToolVersion(output);
   } catch (e) {
     logger.error(`Failed to get version for tool at ${toolPath}: ${e}`);
     return undefined;
   }
-}
-
-function meetsMinVersion(version: string, minVersion: string): boolean {
-  const parts = version.split(".").map(Number);
-  const minParts = minVersion.split(".").map(Number);
-  for (let i = 0; i < Math.max(parts.length, minParts.length); i++) {
-    const a = parts[i] ?? 0;
-    const b = minParts[i] ?? 0;
-    if (a > b) { return true; };
-    if (a < b) { return false; };
-  }
-  return true;
 }
 
 export enum LanguageClientState {
