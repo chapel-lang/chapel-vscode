@@ -13,3 +13,6 @@ out/
 tsconfig.json
 esbuild.js
 .github
+test/
+.vscode-test/
+.vscode-test.mjs
