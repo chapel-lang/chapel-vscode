@@ -25,11 +25,20 @@ jobs:
     - name: Test
       run: |
         npm run pretest
-        npm run test
+        npm run test:node
     - name: Test packaging
       run: |
         mkdir -p bin
         npx vsce package -o bin/chapel.vsix
+    - name: Check wrappers are executable in the package
+      run: |
+        zipinfo bin/chapel.vsix 'extension/wrappers/*'
+        for f in chpl mason conditional-build-run; do
+          zipinfo bin/chapel.vsix "extension/wrappers/$f" | grep -q '^-rwx' || {
+            echo "extension/wrappers/$f is missing or not executable in the VSIX"
+            exit 1
+          }
+        done
     - name: set artifact name
       run: |
         ARTIFACT_VER=$(sed "s/lts\/\*/lts-latest/g" <<< "${{ matrix.node-version }}")
@@ -39,3 +48,53 @@ jobs:
       with:
         name: ${{ env.PACKAGE_ARTIFACT_NAME }}
         path: bin/chapel.vsix
+
+  vscode-unit:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # unit-min-engine runs against the minimum VS Code version in package.json
+        label: [unit, unit-min-engine]
+    steps:
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+    - name: Install Node.js
+      uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+      with:
+        node-version: lts/*
+    - name: NPM install
+      run: npm ci
+    - name: Cache VS Code downloads
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: .vscode-test
+        key: vscode-test-${{ matrix.label }}-${{ hashFiles('package.json') }}
+    - name: Test
+      run: |
+        npm run pretest:vscode
+        xvfb-run -a npx vscode-test --label ${{ matrix.label }}
+
+  integration:
+    runs-on: ubuntu-latest
+    container: chapel/chapel:${{ matrix.chapel }}
+    continue-on-error: ${{ matrix.chapel == 'nightly' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        chapel: [latest, "2.8.0", nightly]
+    steps:
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+    - name: Install Node.js
+      uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+      with:
+        node-version: lts/*
+    - name: Install Electron dependencies
+      run: test/scripts/install-electron-deps.sh
+    - name: NPM install
+      run: npm ci
+    - name: Show Chapel tools
+      run: |
+        command -v chpl chplcheck chpl-language-server mason
+        chpl-language-server --version
+    - name: Test
+      run: xvfb-run -a npm run test:integration
