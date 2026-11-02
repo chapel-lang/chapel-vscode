@@ -1,0 +1,4 @@
+{
+  "chapel.chplcheck.enable": false,
+  "chapel.chpl-language-server.enable": false
+}
