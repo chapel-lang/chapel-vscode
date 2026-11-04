@@ -79,7 +79,7 @@ async function chapel_createDebugConfigForActiveFile() {
   const wsPath = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
   if (!wsPath) {
     vscode.window.showErrorMessage("No workspace folder found.");
-  }mergeEnvPreferUser
+  }
   const paths = executablePathsForFile(document.fileName, wsPath);
   if (!paths) {
     vscode.window.showErrorMessage("Failed to get the file name.");
