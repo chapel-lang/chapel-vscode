@@ -105,7 +105,6 @@ export abstract class ChapelLanguageClient {
     this.state = this.config_.enable
       ? LanguageClientState.STOPPED
       : LanguageClientState.DISABLED;
-    this.tool_path = this.getToolPath();
     this.client = undefined;
     this.logger = logger;
     this.statusBarItem = vscode.window.createStatusBarItem(
@@ -123,6 +122,7 @@ export abstract class ChapelLanguageClient {
     );
     this.statusBarItem.command = `${this.name}.restart`;
     this.statusBarItem.hide();
+    this.tool_path = this.getToolPath();
   }
 
   protected abstract getToolPath(): string;
@@ -136,6 +136,7 @@ export abstract class ChapelLanguageClient {
     this.state = this.config_.enable
       ? LanguageClientState.STOPPED
       : LanguageClientState.DISABLED;
+    this.statusBarItem.hide();
     this.tool_path = this.getToolPath();
     await this.start();
   }
@@ -393,12 +394,7 @@ export abstract class ChapelLanguageClient {
 
 export class ChplCheckClient extends ChapelLanguageClient {
   getToolPath(): string {
-    const path = findToolPath("chplcheck", getChplHome());
-    if (path === undefined) {
-      this.setErrorState();
-      return "";
-    }
-    return path;
+    return findToolPath("chplcheck", getChplHome()) ?? "";
   }
   alwaysArguments(): Array<string> {
     return ["--lsp"];
@@ -406,12 +402,7 @@ export class ChplCheckClient extends ChapelLanguageClient {
 }
 export class CLSClient extends ChapelLanguageClient {
   getToolPath(): string {
-    const path = findToolPath("chpl-language-server", getChplHome());
-    if (path === undefined) {
-      this.setErrorState();
-      return "";
-    }
-    return path;
+    return findToolPath("chpl-language-server", getChplHome()) ?? "";
   }
   alwaysArguments(): Array<string> {
     let args = [];
