@@ -5,7 +5,7 @@ import { activateExtension } from "../../helpers/api";
 import {
   isLintDiagnostic,
   lintViolations,
-  skipWithoutChapel,
+  requireChapel,
   startServers,
   waitForRestart,
 } from "../../helpers/chapel";
@@ -15,8 +15,8 @@ import { waitFor, waitForDiagnostics } from "../../helpers/wait";
 describe("restart commands", () => {
   let api: ChapelExtensionApi;
 
-  before(async function () {
-    skipWithoutChapel(this);
+  before(async () => {
+    requireChapel();
     api = await activateExtension();
   });
 

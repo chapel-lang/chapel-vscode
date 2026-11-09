@@ -5,7 +5,7 @@ import type { ChapelExtensionApi } from "../../../../src/extension";
 import { activateExtension } from "../../helpers/api";
 import {
   positionOf,
-  skipWithoutChapel,
+  requireChapel,
   startServers,
   waitForRestart,
   workspaceUri,
@@ -32,8 +32,8 @@ function writeClsCommands(): void {
 describe(".cls-commands.json", () => {
   let api: ChapelExtensionApi;
 
-  before(async function () {
-    skipWithoutChapel(this);
+  before(async () => {
+    requireChapel();
     writeClsCommands();
     api = await activateExtension();
   });

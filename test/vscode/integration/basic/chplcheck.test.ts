@@ -8,7 +8,7 @@ import {
   lintViolations,
   restoreSettingsAndRestart,
   setSettingAndRestart,
-  skipWithoutChapel,
+  requireChapel,
   startServers,
 } from "../../helpers/chapel";
 import { countToolProcesses } from "../../helpers/processes";
@@ -21,8 +21,8 @@ function sorted(violations: Violation[]): string[] {
 describe("chplcheck", () => {
   let api: ChapelExtensionApi;
 
-  before(async function () {
-    skipWithoutChapel(this);
+  before(async () => {
+    requireChapel();
     api = await activateExtension();
   });
 
