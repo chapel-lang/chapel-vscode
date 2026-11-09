@@ -25,8 +25,7 @@ repository.
   VS Code that is downloaded into `.vscode-test/` on first use.
 
 The VS Code tests can also be run and debugged from the Testing view using the
-Extension Test Runner extension, which is in the recommended extensions for
-this repository.
+Extension Test Runner extension.
 
 ## Installing locally
 
