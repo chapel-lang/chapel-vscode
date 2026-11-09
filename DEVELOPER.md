@@ -17,6 +17,16 @@ extension using `vsce`. To do this, run
 `mkdir -p bin && npx vsce package -o bin/chapel.vsix` from the root of the
 repository.
 
+## Running tests
+
+- `npm test` runs every test that does not need Chapel installed.
+- `npm run test:node` runs the plain Node unit tests in `test/node`.
+- `npm run test:vscode` runs the tests in `test/vscode/unit` inside a copy of
+  VS Code that is downloaded into `.vscode-test/` on first use.
+
+The VS Code tests can also be run and debugged from the Testing view using the
+Extension Test Runner extension.
+
 ## Installing locally
 
 A local build of the extension can be installed in VSCode for testing purposes.
