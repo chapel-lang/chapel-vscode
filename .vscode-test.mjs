@@ -4,7 +4,7 @@ import { readFileSync } from "node:fs";
 const pkg = JSON.parse(readFileSync(new URL("./package.json", import.meta.url), "utf8"));
 const minVersion = pkg.engines.vscode.replace(/^\^/, "");
 
-const launchArgs = ["--disable-extensions"];
+const launchArgs = ["--disable-extensions", "--force-disable-user-env"];
 // Electron's sandbox is unavailable on Linux CI runners and in containers
 if (process.platform === "linux") {
   launchArgs.push("--no-sandbox");

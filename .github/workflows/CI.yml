@@ -84,7 +84,7 @@ jobs:
       run: npm ci
     - name: Show Chapel tools
       run: |
-        command -v chpl chplcheck chpl-language-server mason
+        for tool in chpl chplcheck chpl-language-server mason; do command -v "$tool"; done
         chpl-language-server --version
     - name: Test
       run: xvfb-run -a npm run test:integration
