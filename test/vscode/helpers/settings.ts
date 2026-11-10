@@ -15,10 +15,13 @@ export async function setSetting(key: string, value: unknown): Promise<void> {
   await config.update(key, value, vscode.ConfigurationTarget.Workspace);
 }
 
-export async function restoreSettings(): Promise<void> {
+// Returns the number of settings that were restored.
+export async function restoreSettings(): Promise<number> {
   const config = chapelConfig();
+  const count = originals.size;
   for (const [key, value] of originals) {
     await config.update(key, value, vscode.ConfigurationTarget.Workspace);
   }
   originals.clear();
+  return count;
 }
