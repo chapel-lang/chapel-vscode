@@ -30,9 +30,9 @@ export function findOnPath(tool: string): string | undefined {
   return undefined;
 }
 
-export function skipWithoutChapel(ctx: Mocha.Context): void {
-  if (findOnPath("chpl-language-server") === undefined) {
-    ctx.skip();
+export function requireChapel(): void {
+  for (const tool of ["chplcheck", "chpl-language-server"]) {
+    assert.ok(findOnPath(tool), `${tool} not found on PATH`);
   }
 }
 

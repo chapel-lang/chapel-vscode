@@ -23,16 +23,11 @@ repository.
 - `npm run test:node` runs the plain Node unit tests in `test/node`.
 - `npm run test:vscode` runs the tests in `test/vscode/unit` inside a copy of
   VS Code that is downloaded into `.vscode-test/` on first use.
+- `npm run test:integration` runs the integration tests against a real Chapel installation with `chplcheck` and `chpl-language-server`. Requires a Chapel installation with both tools on `PATH`.
 
-`npm run test:integration` runs the tests in `test/vscode/integration` against
-the real `chplcheck` and `chpl-language-server`, so it needs a Chapel
-installation with both tools on `PATH` (the tests skip themselves otherwise).
-They open the workspaces in `test/fixtures/workspaces` and can take a few
-minutes because the language server is slow to start.
 
 The VS Code tests can also be run and debugged from the Testing view using the
-Extension Test Runner extension, which is in the recommended extensions for
-this repository.
+Extension Test Runner extension.
 
 ## Installing locally
 

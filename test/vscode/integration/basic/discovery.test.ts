@@ -10,7 +10,7 @@ import {
   findOnPath,
   restoreSettingsAndRestart,
   setSettingAndRestart,
-  skipWithoutChapel,
+  requireChapel,
   startServers,
 } from "../../helpers/chapel";
 
@@ -18,8 +18,8 @@ describe("tool discovery", () => {
   let api: ChapelExtensionApi;
   let tmpDir: string | undefined;
 
-  before(async function () {
-    skipWithoutChapel(this);
+  before(async () => {
+    requireChapel();
     api = await activateExtension();
   });
 

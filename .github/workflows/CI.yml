@@ -77,11 +77,10 @@ jobs:
   integration:
     runs-on: ubuntu-latest
     container: chapel/chapel:${{ matrix.chapel }}
-    continue-on-error: ${{ matrix.chapel == 'nightly' }}
     strategy:
       fail-fast: false
       matrix:
-        chapel: [latest, "2.8.0", nightly]
+        chapel: ["2.8.0", latest, nightly]
     steps:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
     - name: Install Node.js
@@ -94,7 +93,7 @@ jobs:
       run: npm ci
     - name: Show Chapel tools
       run: |
-        command -v chpl chplcheck chpl-language-server mason
+        for tool in chpl chplcheck chpl-language-server mason; do command -v "$tool"; done
         chpl-language-server --version
     - name: Test
       run: xvfb-run -a npm run test:integration

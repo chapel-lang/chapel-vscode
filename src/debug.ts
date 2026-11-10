@@ -77,13 +77,13 @@ async function chapel_createDebugConfigForActiveFile() {
     return;
   }
   const wsPath = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+  if (!wsPath) {
+    vscode.window.showErrorMessage("No workspace folder found.");
+  }
   const paths = executablePathsForFile(document.fileName, wsPath);
   if (!paths) {
     vscode.window.showErrorMessage("Failed to get the file name.");
     return;
-  }
-  if (!wsPath) {
-    vscode.window.showErrorMessage("No workspace folder found.");
   }
 
   const { argsArray, envMap } = await getArgsAndEnv();
@@ -140,7 +140,6 @@ async function getArgsAndEnv() {
   const env = await vscode.window.showInputBox({ placeHolder: "Enter the environment variables to set (key=value, comma separated)" });
   const envMap = parseEnvInput(env);
 
-  // merge the base env with the user provided env, prefer user provided env
   mergeEnvPreferUser(envMap, getEnvAffectingChapel());
 
   return { argsArray, envMap };

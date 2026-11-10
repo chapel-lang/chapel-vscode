@@ -6,7 +6,7 @@ import { activateExtension, getExtension } from "../../helpers/api";
 import {
   clsAtLeast,
   positionOf,
-  skipWithoutChapel,
+  requireChapel,
   startServers,
   workspaceUri,
 } from "../../helpers/chapel";
@@ -18,8 +18,8 @@ type Locations = (vscode.Location | vscode.LocationLink)[];
 describe("mason project", () => {
   let api: ChapelExtensionApi;
 
-  before(async function () {
-    skipWithoutChapel(this);
+  before(async () => {
+    requireChapel();
     api = await activateExtension();
   });
 

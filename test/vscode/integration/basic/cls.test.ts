@@ -9,7 +9,7 @@ import {
   positionOf,
   restoreSettingsAndRestart,
   setSettingAndRestart,
-  skipWithoutChapel,
+  requireChapel,
   startServers,
   workspaceUri,
 } from "../../helpers/chapel";
@@ -47,8 +47,8 @@ function retry<T>(
 describe("chpl-language-server", () => {
   let api: ChapelExtensionApi;
 
-  before(async function () {
-    skipWithoutChapel(this);
+  before(async () => {
+    requireChapel();
     api = await activateExtension();
   });
 
