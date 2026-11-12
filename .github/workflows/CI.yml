@@ -33,9 +33,9 @@ jobs:
     - name: Check wrappers are executable in the package
       run: |
         zipinfo bin/chapel.vsix 'extension/wrappers/*'
-        for f in chpl mason conditional-build-run; do
-          zipinfo bin/chapel.vsix "extension/wrappers/$f" | grep -q '^-rwx' || {
-            echo "extension/wrappers/$f is missing or not executable in the VSIX"
+        for f in $(git ls-files wrappers); do
+          zipinfo bin/chapel.vsix "extension/$f" | grep -q '^-rwx' || {
+            echo "extension/$f is missing or not executable in the VSIX"
             exit 1
           }
         done

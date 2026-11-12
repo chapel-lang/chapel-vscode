@@ -4,11 +4,20 @@ import * as fs from "fs";
 import * as path from "path";
 
 const repoRoot = path.resolve(__dirname, "..", "..", "..");
-const wrappers = [
-  "wrappers/chpl",
-  "wrappers/mason",
-  "wrappers/conditional-build-run",
-];
+const wrapperModes = new Map(
+  childProcess
+    .execFileSync("git", ["ls-files", "-s", "--", "wrappers"], {
+      cwd: repoRoot,
+      encoding: "utf8",
+    })
+    .split(/\r?\n/)
+    .filter((line) => line.length > 0)
+    .map((line) => {
+      const [info, file] = line.split("\t");
+      return [file, info.split(" ")[0]];
+    })
+);
+const wrappers = [...wrapperModes.keys()];
 
 describe("packaging", () => {
   let packaged: string[] = [];
@@ -51,22 +60,9 @@ describe("packaging", () => {
   }
 
   it("wrappers are executable in git", () => {
-    const output = childProcess.execFileSync(
-      "git",
-      ["ls-files", "-s", "--", ...wrappers],
-      { cwd: repoRoot, encoding: "utf8" }
-    );
-    const modes = new Map(
-      output
-        .trim()
-        .split(/\r?\n/)
-        .map((line) => {
-          const [info, file] = line.split("\t");
-          return [file, info.split(" ")[0]];
-        })
-    );
-    for (const wrapper of wrappers) {
-      assert.strictEqual(modes.get(wrapper), "100755", wrapper);
+    assert.notDeepStrictEqual(wrappers, []);
+    for (const [wrapper, mode] of wrapperModes) {
+      assert.strictEqual(mode, "100755", wrapper);
     }
   });
 });
