@@ -30,6 +30,15 @@ jobs:
       run: |
         mkdir -p bin
         npx vsce package -o bin/chapel.vsix
+    - name: Check wrappers are executable in the package
+      run: |
+        zipinfo bin/chapel.vsix 'extension/wrappers/*'
+        for f in $(git ls-files wrappers); do
+          zipinfo bin/chapel.vsix "extension/$f" | grep -q '^-rwx' || {
+            echo "extension/$f is missing or not executable in the VSIX"
+            exit 1
+          }
+        done
     - name: set artifact name
       run: |
         ARTIFACT_VER=$(sed "s/lts\/\*/lts-latest/g" <<< "${{ matrix.node-version }}")
