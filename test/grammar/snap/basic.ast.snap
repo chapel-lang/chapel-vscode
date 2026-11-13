@@ -1,0 +1,141 @@
+>AST dump for hello after pass normalize.
+#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ source.chapelAst
+>Module use list: ChapelStandard
+#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ source.chapelAst
+>
+>{
+#^^ source.chapelAst
+>  function main[180001]() : void "resolved"
+#^^ source.chapelAst
+#  ^^^^^^^^ source.chapelAst keyword.control.chapelAst
+#          ^^^^^ source.chapelAst
+#               ^^^^^^^^ source.chapelAst constant.numeric.chapelAst
+#                       ^^^^^ source.chapelAst
+#                            ^^^^ source.chapelAst storage.type.chapelAst
+#                                ^ source.chapelAst
+#                                 ^ source.chapelAst string.quoted.double.chapelAst punctuation.definition.string.begin.chapelAst
+#                                  ^^^^^^^^ source.chapelAst string.quoted.double.chapelAst
+#                                          ^ source.chapelAst string.quoted.double.chapelAst punctuation.definition.string.end.chapelAst
+>  {
+#^^^^ source.chapelAst
+>    unknown x[180010] "dead after last mention"
+#^^^^ source.chapelAst
+#    ^^^^^^^ source.chapelAst storage.type.chapelAst
+#           ^^ source.chapelAst
+#             ^^^^^^^^ source.chapelAst constant.numeric.chapelAst
+#                     ^ source.chapelAst
+#                      ^ source.chapelAst string.quoted.double.chapelAst punctuation.definition.string.begin.chapelAst
+#                       ^^^^^^^^^^^^^^^^^^^^^^^ source.chapelAst string.quoted.double.chapelAst
+#                                              ^ source.chapelAst string.quoted.double.chapelAst punctuation.definition.string.end.chapelAst
+>    const ref arg y[180020]:range(int(64),both,one) "const"
+#^^^^ source.chapelAst
+#    ^^^^^ source.chapelAst storage.type.chapelAst
+#         ^ source.chapelAst
+#          ^^^ source.chapelAst storage.type.chapelAst
+#             ^ source.chapelAst
+#              ^^^ source.chapelAst storage.type.chapelAst
+#                 ^^ source.chapelAst
+#                   ^^^^^^^^ source.chapelAst constant.numeric.chapelAst
+#                           ^ source.chapelAst
+#                            ^^^^^ source.chapelAst storage.type.chapelAst
+#                                 ^ source.chapelAst
+#                                  ^^^ source.chapelAst storage.type.chapelAst
+#                                     ^ source.chapelAst
+#                                      ^^ source.chapelAst constant.numeric.chapelAst
+#                                        ^^^^^^^^^^^^ source.chapelAst
+#                                                    ^ source.chapelAst string.quoted.double.chapelAst punctuation.definition.string.begin.chapelAst
+#                                                     ^^^^^ source.chapelAst string.quoted.double.chapelAst
+#                                                          ^ source.chapelAst string.quoted.double.chapelAst punctuation.definition.string.end.chapelAst
+>    (180030 'end of statement')
+#^^^^ source.chapelAst
+#    ^ source.chapelAst
+#     ^^^^^^ source.chapelAst constant.numeric.chapelAst
+#           ^ source.chapelAst
+#            ^^^^^^^^^^^^^^^^^^ source.chapelAst keyword.control.chapelAst
+#                              ^^ source.chapelAst
+>    (180040 'move' x[180010] (180050 'new' R[180060]))
+#^^^^ source.chapelAst
+#    ^ source.chapelAst
+#     ^^^^^^ source.chapelAst constant.numeric.chapelAst
+#           ^ source.chapelAst
+#            ^^^^^^ source.chapelAst keyword.control.chapelAst
+#                  ^^ source.chapelAst
+#                    ^^^^^^^^ source.chapelAst constant.numeric.chapelAst
+#                            ^ source.chapelAst
+#                             ^ source.chapelAst
+#                              ^^^^^^ source.chapelAst constant.numeric.chapelAst
+#                                    ^ source.chapelAst
+#                                     ^^^^^ source.chapelAst keyword.control.chapelAst
+#                                          ^^ source.chapelAst
+#                                            ^^^^^^^^ source.chapelAst constant.numeric.chapelAst
+#                                                    ^^^ source.chapelAst
+>    (180070 call writeln "hello" x[180010])
+#^^^^ source.chapelAst
+#    ^ source.chapelAst
+#     ^^^^^^ source.chapelAst constant.numeric.chapelAst
+#           ^ source.chapelAst
+#            ^^^^ source.chapelAst keyword.control.chapelAst
+#                ^^^^^^^^^ source.chapelAst
+#                         ^ source.chapelAst string.quoted.double.chapelAst punctuation.definition.string.begin.chapelAst
+#                          ^^^^^ source.chapelAst string.quoted.double.chapelAst
+#                               ^ source.chapelAst string.quoted.double.chapelAst punctuation.definition.string.end.chapelAst
+#                                ^^ source.chapelAst
+#                                  ^^^^^^^^ source.chapelAst constant.numeric.chapelAst
+#                                          ^^ source.chapelAst
+>    if (180080 call == this[180090] 1)
+#^^^^ source.chapelAst
+#    ^^ source.chapelAst keyword.control.chapelAst
+#      ^ source.chapelAst
+#       ^ source.chapelAst
+#        ^^^^^^ source.chapelAst constant.numeric.chapelAst
+#              ^ source.chapelAst
+#               ^^^^ source.chapelAst keyword.control.chapelAst
+#                   ^^^^ source.chapelAst
+#                       ^^^^ source.chapelAst variable.language.this.chapelAst
+#                           ^^^^^^^^ source.chapelAst constant.numeric.chapelAst
+#                                   ^^^^ source.chapelAst
+>    {
+#^^^^^^ source.chapelAst
+>      (180100 return _void[57])
+#^^^^^^ source.chapelAst
+#      ^ source.chapelAst
+#       ^^^^^^ source.chapelAst constant.numeric.chapelAst
+#             ^ source.chapelAst
+#              ^^^^^^ source.chapelAst keyword.control.chapelAst
+#                    ^ source.chapelAst
+#                     ^^^^^ source.chapelAst storage.type.chapelAst
+#                          ^^^^ source.chapelAst constant.numeric.chapelAst
+#                              ^^ source.chapelAst
+>    }
+#^^^^^^ source.chapelAst
+>    ForLoop[180110]
+#^^^^ source.chapelAst
+#    ^^^^^^^ source.chapelAst keyword.control.chapelAst
+#           ^^^^^^^^ source.chapelAst constant.numeric.chapelAst
+>    {
+#^^^^^^ source.chapelAst
+>      (180120 yield i[180130])
+#^^^^^^ source.chapelAst
+#      ^ source.chapelAst
+#       ^^^^^^ source.chapelAst constant.numeric.chapelAst
+#             ^ source.chapelAst
+#              ^^^^^ source.chapelAst keyword.control.chapelAst
+#                   ^^ source.chapelAst
+#                     ^^^^^^^^ source.chapelAst constant.numeric.chapelAst
+#                             ^^ source.chapelAst
+>    }
+#^^^^^^ source.chapelAst
+>    (180140 gotoReturn _end_main[180150])
+#^^^^ source.chapelAst
+#    ^ source.chapelAst
+#     ^^^^^^ source.chapelAst constant.numeric.chapelAst
+#           ^ source.chapelAst
+#            ^^^^^^^^^^ source.chapelAst keyword.control.chapelAst
+#                      ^^^^^^^^^^ source.chapelAst
+#                                ^^^^^^^^ source.chapelAst constant.numeric.chapelAst
+#                                        ^^ source.chapelAst
+>  }
+#^^^^ source.chapelAst
+>}
+#^^ source.chapelAst
+>
