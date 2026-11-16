@@ -1,0 +1,22 @@
+AST dump for hello after pass normalize.
+Module use list: ChapelStandard
+
+{
+  function main[180001]() : void "resolved"
+  {
+    unknown x[180010] "dead after last mention"
+    const ref arg y[180020]:range(int(64),both,one) "const"
+    (180030 'end of statement')
+    (180040 'move' x[180010] (180050 'new' R[180060]))
+    (180070 call writeln "hello" x[180010])
+    if (180080 call == this[180090] 1)
+    {
+      (180100 return _void[57])
+    }
+    ForLoop[180110]
+    {
+      (180120 yield i[180130])
+    }
+    (180140 gotoReturn _end_main[180150])
+  }
+}

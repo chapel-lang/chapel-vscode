@@ -26,6 +26,7 @@ jobs:
       run: |
         npm run pretest
         npm run test:node
+        npm run test:grammar
     - name: Test packaging
       run: |
         mkdir -p bin
@@ -49,13 +50,31 @@ jobs:
         name: ${{ env.PACKAGE_ARTIFACT_NAME }}
         path: bin/chapel.vsix
 
+  wrappers:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        # macos-latest covers the system bash 3.2
+        os: [ubuntu-latest, macos-latest]
+    steps:
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+    - name: Install Node.js
+      uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+      with:
+        node-version: lts/*
+    - name: NPM install
+      run: npm ci
+    - name: Test wrappers
+      run: npm run test:wrappers
+
   vscode-unit:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         # unit-min-engine runs against the minimum VS Code version in package.json
-        label: [unit, unit-min-engine]
+        label: [unit, unit-min-engine, unit-startup, unit-no-folder, unit-mason, unit-tasks]
     steps:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
     - name: Install Node.js
