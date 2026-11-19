@@ -1,26 +1,10 @@
 import * as assert from "assert";
 import * as path from "path";
-import * as vscode from "vscode";
 import { LanguageClientState } from "../../../src/ChapelLanguageClient";
 import { activateExtension } from "../helpers/api";
+import { isStatusBarVisible, trackStatusBar } from "../helpers/languageClients";
 import { restoreSettings, setSetting } from "../helpers/settings";
 import { waitFor } from "../helpers/wait";
-
-// StatusBarItem has no visibility getter, so record show()/hide() calls.
-function trackVisibility(item: vscode.StatusBarItem): { visible: boolean } {
-  const tracker = { visible: false };
-  const show = item.show.bind(item);
-  const hide = item.hide.bind(item);
-  item.show = () => {
-    tracker.visible = true;
-    show();
-  };
-  item.hide = () => {
-    tracker.visible = false;
-    hide();
-  };
-  return tracker;
-}
 
 describe("language client status bar", () => {
   afterEach(restoreSettings);
@@ -34,19 +18,19 @@ describe("language client status bar", () => {
   it("hides the error item after disabling an errored server (#158)", async () => {
     const api = await activateExtension();
     const client = api.chplcheck;
-    const status = trackVisibility(client.statusBarItem);
+    trackStatusBar(client);
 
     await setSetting("chplcheck.path", path.join(__dirname, "does-not-exist", "chplcheck"));
     await setSetting("chplcheck.enable", true);
     await waitFor(() => client.state === LanguageClientState.ERRORED, {
       message: "chplcheck to error",
     });
-    assert.ok(status.visible, "error item should be shown");
+    assert.ok(isStatusBarVisible(client), "error item should be shown");
 
     await setSetting("chplcheck.enable", false);
     await waitFor(() => client.state === LanguageClientState.DISABLED, {
       message: "chplcheck to be disabled",
     });
-    assert.ok(!status.visible, "error item should be hidden");
+    assert.ok(!isStatusBarVisible(client), "error item should be hidden");
   });
 });
